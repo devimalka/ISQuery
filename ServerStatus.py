@@ -3,7 +3,11 @@ import mysql.connector
 from locations import locs
 
 from var import bcolors
+import time
 
+import os
+
+os.system('color')
 
 # def serverDownOrUp(iplist):
 
@@ -52,6 +56,7 @@ def serverDownOrUp(iplist):
                     if connection.is_connected():
                         print("Connection successfull to {} {}".format(name,tp))
                         connection.close()
+                        time.sleep(1)
 
                 except:
                     print(f"{bcolors.FAIL}connection failed to %s %s{bcolors.ENDC}"%(name,tp))

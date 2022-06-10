@@ -1,3 +1,31 @@
+from ast import Not
+from cmath import inf
+from multiprocessing import connection
+from operator import index
+from sqlite3 import Cursor
+from unittest.result import failfast
+import mysql.connector
+from mysql.connector import errorcode
+from numpy import save
+
+import pandas as pd
+from requests import NullHandler
+from sqlalchemy import false
+#importing Queries
+from Queries import *
+
+#Location Ip's
+from locations import locs
+
+from env import *
+
+startDate='2022-05-01'
+endDate='2022-05-15'
+
+from lib import fileChecker,logwriter
+
+    
+
 from cmath import inf
 from multiprocessing import connection
 from operator import index
@@ -16,8 +44,8 @@ from locations import locs
 
 from env import *
 
-startDate='2022-04-01'
-endDate='2022-04-30'
+startDate='2022-05-01'
+endDate='2022-05-15'
 
 from lib import fileChecker,logwriter
 
@@ -47,13 +75,16 @@ def executor(QUERY):
         
                     
                     cursor = cnx.cursor()
-                    cursor.execute("SELECT * FROM rms_pospromohead r where promid='3101';")
+                    cursor.execute(QUERY)
                     df = pd.DataFrame(cursor.fetchall())
                     
+
                     if alldf is not None:
-                        alldf = alldf.append(df)
+                       if not df.empty:
+                           alldf = pd.concat([alldf,df],ignore_index=True,axis=0)
                     else:
                         alldf = df
+                 
                 
                     print(df)
                     field_names = [ i[0] for i in  cursor.description]
@@ -85,6 +116,7 @@ def executor(QUERY):
             else:
                 cnx.close()
 
+    return alldf
    
 
 
@@ -99,13 +131,19 @@ def saveToExcel(query,filename):
 
     xlswriter = pd.ExcelWriter("%s.xls"%(filename),engine='openpyxl')
     queryDatas = executor(query)
-    export = queryDatas[0]
-    export.columns = queryDatas[1]
-    export.to_excel(xlswriter,index=False)
+    print(queryDatas)
+    export = queryDatas
+    export.to_excel(xlswriter)
     xlswriter.save()
 
 
+    print("succes savetoExcel")
 
-executor(doctally)
+
+saveToExcel(ntb25,"ntb25%")
+
+
+
+
 
 
