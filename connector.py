@@ -1,4 +1,5 @@
 from ast import Not
+from calendar import day_abbr
 from cmath import inf
 from multiprocessing import connection
 from operator import index
@@ -44,15 +45,17 @@ from locations import locs
 
 from env import *
 
-startDate='2022-05-01'
-endDate='2022-05-15'
+
+from Test_Variables import location_test as loctest
 
 from lib import fileChecker,logwriter
 
     
 
 def executor(QUERY):
-    alldf = None
+    dataFrameStack = []
+
+  
     
     for type,info in locs.items():
         fileChecker(type)
@@ -76,17 +79,25 @@ def executor(QUERY):
                     
                     cursor = cnx.cursor()
                     cursor.execute(QUERY)
-                    df = pd.DataFrame(cursor.fetchall())
-                    
-
-                    if alldf is not None:
-                       if not df.empty:
-                           alldf = pd.concat([alldf,df],ignore_index=True,axis=0)
-                    else:
-                        alldf = df
-                 
-                
+                    df = pd.DataFrame(cursor)
+                   
                     print(df)
+
+
+                    # if not df.empty:
+                    #     if dataFrameStack is not None:
+                    #         dataFrameStack = dataFrameStack.append(df)
+
+                        
+                    # else:
+                    #     dataFrameStack = df
+
+                    dataFrameStack.append(df)
+                    print("len of dataframestack is {}".format(len(dataFrameStack)))
+                      
+                 
+                    print('\n\n\n\n\n***********************')
+                    print(dataFrameStack)
                     field_names = [ i[0] for i in  cursor.description]
                     print(field_names)
                         
@@ -116,7 +127,7 @@ def executor(QUERY):
             else:
                 cnx.close()
 
-    return alldf
+    return dataFrameStack
    
 
 
@@ -129,18 +140,22 @@ def executor(QUERY):
 
 def saveToExcel(query,filename):
 
+    fulstack = None
+
     xlswriter = pd.ExcelWriter("%s.xls"%(filename),engine='openpyxl')
     queryDatas = executor(query)
-    print(queryDatas)
-    export = queryDatas
-    export.to_excel(xlswriter)
+    for i in queryDatas:
+        fulstack = pd.concat([fulstack,i],axis=0,ignore_index=True)
+
+    export = fulstack
+    export.to_excel(xlswriter,index=False)
     xlswriter.save()
 
 
     print("succes savetoExcel")
 
 
-saveToExcel(ntb25,"ntb25%")
+saveToExcel(dfcc10,"dffcc10restindex")
 
 
 
