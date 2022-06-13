@@ -1,17 +1,19 @@
 import mysql.connector
-from Queries import *
-from locations import *
-from lib import *
-import openpyxl
-from env import *
+from mysql.connector import errorcode 
 import xlwt
 import pandas as pd
+import openpyxl
 
-from mysql.connector import errorcode 
+
+from lib import *
+from env import *
+from Queries import *
+from locations import *
+
 
 def executor(QUERY):
-    dataFrameStack = []
 
+    dataFrameStack = []
   
     
     for type,info in locs.items():
@@ -41,7 +43,6 @@ def executor(QUERY):
                     print(df)
 
 
-                 
                     if not df.empty:
                         dataFrameStack.append(df)
              
@@ -90,14 +91,11 @@ def executor(QUERY):
 
 def saveToExcel(query,filename):
 
-    fulstack = None
 
     xlswriter = pd.ExcelWriter("%s.xls"%(filename),engine='openpyxl')
     queryDatas = executor(query)
-    for i in queryDatas:
-        fulstack = pd.concat([fulstack,i],axis=0,ignore_index=True)
-
-    export = fulstack
+    
+    export = dfConcat(queryDatas)
     export.to_excel(xlswriter,index=False)
     xlswriter.save()
 

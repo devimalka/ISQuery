@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import pandas as pd
 
 logfailedls = 'logfailed.txt'
 logsuccessls = 'logsuccess.txt'
@@ -28,3 +29,16 @@ def logwriter(ctype,ip,locName,status):
         logfailed = open("{}/{}".format(ctype,logfailedls),'a')
         logfailed.write('{}  : {}-{}\n'.format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"),ip,locName))
         logfailed.close()
+
+
+
+
+#conatanating dataframe list and stacking verticaly
+def dfConcat(dflist):
+    concatedDf = pd.DataFrame()
+    for i in dflist:
+        concatedDf = pd.concat([concatedDf,i],axis=0,ignore_index=True)
+    return concatedDf
+
+
+
