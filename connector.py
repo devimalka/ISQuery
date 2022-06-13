@@ -95,7 +95,7 @@ def saveToExcel(query,filename):
     queryDatas = executor(query)
     
     export = dfConcat(queryDatas)
-    FileSaver(filename)
+    FileSaver(filename,query)
     xlswriter = pd.ExcelWriter("%s/%s.xls"%(filename,filename),engine='openpyxl')
 
     export.to_excel(xlswriter,index=False)
@@ -105,7 +105,7 @@ def saveToExcel(query,filename):
     print("succes savetoExcel")
 
 
-saveToExcel(dfcc10,"dffcc10 test2")
+saveToExcel(scbcopy,'scb 25 fresh offer')
 
 
 

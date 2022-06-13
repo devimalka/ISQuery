@@ -162,3 +162,19 @@ on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and
 where a.sbu_code='830' and a.inv_status='VALID' and d.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
 and a.txn_date='2022-06-11' and c.promid in('3131') and b.pay_mode='cr' and b.comp_code='20'
 order by a.loc_code,c.txndat,c.maccod,a.receiptno,a.user_id'''
+
+
+scbcopy = '''
+select a.loc_code,c.promid,a.txn_date,a.mach_code,a.receiptno,c.seqno,a.plu_code,a.item_code,d.itm_desc,a.qty,a.price,(a.price*a.qty) as Gross_value,'12.5%',((a.price*a.qty/100)*12.5) as SCB_discount,'12.5%',((a.price*a.qty/100)*12.5) as ARPICO_discount, a.disc_amt as Total_discount,
+b.amount as paid_amount_by_card,b.cardbn,b.lasnum
+FROM rms_pos_txn_det a
+inner join rms_pospromotxn c
+on a.sbu_code=c.sbucod and a.loc_code=c.loccod and a.txn_date=c.txndat and a.mach_code=c.maccod and a.user_id=c.userid and a.receiptno=c.recino and a.seq_no=c.seqno
+inner join rms_itmmaster d
+on a.sbu_code=d.sbu_code and a.loc_code=d.loc_code and a.plu_code=d.plu_code and a.item_code=d.item_code
+left outer join rms_pos_pay_details b
+on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
+where a.sbu_code='830' and a.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
+and a.txn_date between '2022-06-04' and '2022-06-12' and c.promid in('2255','2265') and a.disc_per<>'0' and b.comp_code='02' and b.pay_mode='cr'
+order by a.txn_date,a.receiptno,a.mach_code,a.seq_no
+'''

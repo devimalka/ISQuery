@@ -32,7 +32,8 @@ class Anotherwindow(QWidget):
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
-        self.label = QLabel("Anothe window")
+        self.setFixedSize(220,120)
+        self.label = QLabel("Another window")
         layout.addWidget(self.label)
         self.setLayout(layout)
 
@@ -45,6 +46,15 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("IS Query Exporter")
         self.setFixedSize(400,380)
+
+        self.btn = QPushButton(self)
+        self.btn.setText("push me")
+        
+        self.btn.clicked.connect(self.w.show)
+
+        self.btn2 = QPushButton(self)
+        self.btn2.setText("button 2")
+        self.btn2.move(0,40)
 
 
 
