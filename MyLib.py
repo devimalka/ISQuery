@@ -41,4 +41,9 @@ def dfConcat(dflist):
     return concatedDf
 
 
-
+#create folder
+def FileSaver(Filename):
+    if Filename not in os.listdir():
+        os.makedirs(Filename)
+    elif Filename in os.listdir():
+        os.remove(Filename)

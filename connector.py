@@ -5,7 +5,7 @@ import pandas as pd
 import openpyxl
 
 
-from lib import *
+from MyLib import *
 from env import *
 from Queries import *
 from locations import *
@@ -92,10 +92,12 @@ def executor(QUERY):
 def saveToExcel(query,filename):
 
 
-    xlswriter = pd.ExcelWriter("%s.xls"%(filename),engine='openpyxl')
     queryDatas = executor(query)
     
     export = dfConcat(queryDatas)
+    FileSaver(filename)
+    xlswriter = pd.ExcelWriter("%s/%s.xls"%(filename,filename),engine='openpyxl')
+
     export.to_excel(xlswriter,index=False)
     xlswriter.save()
 
@@ -103,7 +105,7 @@ def saveToExcel(query,filename):
     print("succes savetoExcel")
 
 
-saveToExcel(dfcc10,"dffcc10restindex")
+saveToExcel(dfcc10,"dffcc10 test2")
 
 
 
