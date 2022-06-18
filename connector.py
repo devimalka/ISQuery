@@ -1,3 +1,5 @@
+from fileinput import filename
+from operator import index
 import mysql.connector
 from mysql.connector import errorcode
 from numpy import save
@@ -113,7 +115,10 @@ def executor(QUERY):
 
 
 
-
+def ExcelSaver(df,filename):
+    xlswriter = pd.ExcelWriter('{}/{}excels55hhhjaver.xls'.format(filename,filename),engine='openpyxl')
+    df.to_excel(xlswriter,index=False)
+    xlswriter.save()
 
 
 
@@ -126,7 +131,9 @@ def saveToExcel(query,filename):
     export = dfConcat(queryDatas)
     ad =dfConcat(adlist)
     sc = dfConcat(sclist)
-    FileSaver(filename,query)
+
+
+    FolderCreate(filename,query)
 
 
     xlswriter = pd.ExcelWriter("%s/%s.xls"%(filename,filename),engine='openpyxl')
@@ -140,11 +147,13 @@ def saveToExcel(query,filename):
     ad.to_excel(xlswriterad,index=False)
     xlswriterad.save()
 
+    ExcelSaver(ad,filename)
 
-    print("succes savetoExcel")
+
+    print("Succes savetoExcel")
 
 
-saveToExcel(ntb25,'NTB AD SC Full Chcek')
+saveToExcel(ntb25,'NTB')
 
 
 

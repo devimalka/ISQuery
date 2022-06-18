@@ -45,19 +45,18 @@ def dfConcat(dflist):
 
 #save the current query to text file
 def QueryToFilesaver(Filename,query):
-    queryFile = open('{}/query.txt'.format(Filename),'w')
+    queryFile = open('{}/query.txt'.format(Filename),'a')
     queryFile.write(query)
     queryFile.close()
 
     
 
 #create folder
-def FileSaver(Filename,query):
-    if Filename  in os.listdir():
+def FolderCreate(Filename,query):
+    if os.path.exists(Filename):
         shutil.rmtree(Filename)
-    elif Filename not in os.listdir():
-        os.mkdir(Filename)
-    
+    os.makedirs(Filename)
+
     QueryToFilesaver(Filename,query)
 
 
