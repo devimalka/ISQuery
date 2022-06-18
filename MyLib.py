@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import shutil
 import pandas as pd
 
 logfailedls = 'logfailed.txt'
@@ -52,10 +53,10 @@ def QueryToFilesaver(Filename,query):
 
 #create folder
 def FileSaver(Filename,query):
-    if Filename not in os.listdir():
-        os.makedirs(Filename)
-    elif Filename in os.listdir():
-        os.remove(Filename)
+    if Filename  in os.listdir():
+        shutil.rmtree(Filename)
+    elif Filename not in os.listdir():
+        os.mkdir(Filename)
     
     QueryToFilesaver(Filename,query)
 

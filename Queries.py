@@ -126,7 +126,7 @@ on a.sbu_code=d.sbu_code and a.loc_code=d.loc_code and a.plu_code=d.plu_code and
 left outer join rms_pos_pay_details b
 on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
 where a.sbu_code='830' and a.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
-and a.txn_date in('2022-06-08') and c.promid in('2262')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='17'
+and a.txn_date in('2022-06-15') and c.promid in('2271')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='17'
 order by a.loc_code,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno'''
 
 

@@ -1,62 +1,47 @@
-#from PyQt5.QtWidgets import QApplication, QWidget, QPushButton,QMainWindow,QLabel,QLineEdit,QVBoxLayout,QTextEdit
+
 from PyQt5.QtCore import QSize,Qt
-from PyQt5.QtWidgets import (
-    QApplication,
-    QCheckBox,
-    QComboBox,
-    QDateEdit,
-    QDateTimeEdit,
-    QDial,
-    QDoubleSpinBox,
-    QFontComboBox,
-    QLabel,
-    QLCDNumber,
-    QLineEdit,
-    QMainWindow,
-    QProgressBar,
-    QPushButton,
-    QRadioButton,
-    QSlider,
-    QSpinBox,
-    QTimeEdit,
-    QVBoxLayout,
-    QWidget,
-  
-)
+from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout
+from PyQt5.QtGui import QPalette,QColor
 
 
 import sys
 
+class Color(QWidget):
 
-class Anotherwindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        layout = QVBoxLayout()
-        self.setFixedSize(220,120)
-        self.label = QLabel("Another window")
-        layout.addWidget(self.label)
-        self.setLayout(layout)
+    def __init__(self, color):
+        super(Color, self).__init__()
+        self.setAutoFillBackground(True)
 
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(color))
+        self.setPalette(palette)
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.w = Anotherwindow()
 
-        self.setWindowTitle("IS Query Exporter")
-        self.setFixedSize(400,380)
-
-        self.btn = QPushButton(self)
-        self.btn.setText("push me")
+        self.setWindowTitle("Main Window")
         
-        self.btn.clicked.connect(self.w.show)
-
-        self.btn2 = QPushButton(self)
-        self.btn2.setText("button 2")
-        self.btn2.move(0,40)
+        self.setFixedSize(360,360)
 
 
+        layout = QVBoxLayout()
+        layout.addWidget(Color('red'))
+        layout.addWidget(Color('green'))
+
+        layout2 = QHBoxLayout()
+        layout2.addWidget(Color('blue'))
+        layout2.addWidget(Color('black'))
+
+        layout.addLayout(layout2)
+
+
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
+
+  
 
 app = QApplication([])
 
