@@ -13,7 +13,6 @@ from env import *
 from Queries import *
 from locations import *
 
-FailedLocs = {}
 
 adlist =[]
 sclist = []
@@ -37,9 +36,11 @@ def storeViseappend(type,df):
 def executor(QUERY):
 
     dataFrameStack = []
+    loccopy = locs
+    FailedLocs = {}
 
 
-    for type,info in locs.items():
+    for type,info in loccopy.items():
         fileChecker(type)
 
         for ip,locName in info.items():
@@ -109,14 +110,14 @@ def executor(QUERY):
             else:
                 cnx.close()
 
-    return dataFrameStack
+    return [dataFrameStack,FailedLocs]
 
 
 
 
 
-def ExcelSaver(df,filename):
-    xlswriter = pd.ExcelWriter('{}/{}excels55hhhjaver.xls'.format(filename,filename),engine='openpyxl')
+def ExcelSaver(df,filename,loctype):
+    xlswriter = pd.ExcelWriter('{}/{}.xls'.format(filename,loctype),engine='openpyxl')
     df.to_excel(xlswriter,index=False)
     xlswriter.save()
 
@@ -128,32 +129,26 @@ def saveToExcel(query,filename):
 
     queryDatas = executor(query)
 
-    export = dfConcat(queryDatas)
+    export = dfConcat(queryDatas[0])
     ad =dfConcat(adlist)
     sc = dfConcat(sclist)
 
 
     FolderCreate(filename,query)
 
+    ExcelSaver(ad,filename,'ADA')
+    ExcelSaver(sc,filename,'SALE')
+    ExcelSaver(export,filename,filename)
+    
+    locdetailswrite(filename,queryDatas[1])
+    
 
-    xlswriter = pd.ExcelWriter("%s/%s.xls"%(filename,filename),engine='openpyxl')
-    export.to_excel(xlswriter,index=False)
-    xlswriter.save()
 
-    xlswritersc = pd.ExcelWriter("%s/%ssc.xls"%(filename,filename),engine='openpyxl')
-    sc.to_excel(xlswritersc,index=False)
-    xlswritersc.save()
-    xlswriterad = pd.ExcelWriter("%s/%sad.xls"%(filename,filename),engine='openpyxl')
-    ad.to_excel(xlswriterad,index=False)
-    xlswriterad.save()
-
-    ExcelSaver(ad,filename)
-
+  
 
     print("Succes savetoExcel")
+    print(queryDatas)
 
 
-saveToExcel(ntb25,'NTB')
-
-
+saveToExcel(Seylan_10_Debit_CARD,'SEYLAN 10% Debit Card Promo 17-06-2022')
 

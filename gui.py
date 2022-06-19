@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
 
         self.button2 = QPushButton('btn2')
         self.layout.addWidget(self.button2,2)
+        self.button2.clicked.connect(self.doctally)
 
         #add layout to central widget
         self.wid.setLayout(self.layout)
