@@ -19,6 +19,17 @@ sclist = []
 srlist = []
 fclist = []
 
+def listClear():
+    global adlist 
+    adlist= []
+    global sclist
+    sclist= []
+    global srlist 
+    srlist= []
+    global fclist 
+    fclist= []
+
+
 def storeViseappend(type,df):
     if type=='ad':
         adlist.append(df)
@@ -147,8 +158,7 @@ def saveToExcel(query,filename):
   
 
     print("Succes savetoExcel")
-    print(queryDatas)
+    listClear()
 
 
-saveToExcel(Seylan_10_Debit_CARD,'SEYLAN 10% Debit Card Promo 17-06-2022')
 
