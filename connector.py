@@ -1,18 +1,13 @@
-from fileinput import filename
-from operator import index
 import mysql.connector
 from mysql.connector import errorcode
-from numpy import save
 import xlwt
 import pandas as pd
 import openpyxl
-
 
 from MyLib import *
 from env import *
 from Queries import *
 from locations import *
-
 
 adlist =[]
 sclist = []
@@ -60,7 +55,7 @@ def executor(QUERY):
                 cnx = mysql.connector.connect(user=usr, password=passwd,host=ip, database=db)
 
                 if cnx.is_connected():
-                    print("Connection Succesfull to {}".format(locName))
+                    print("Connection Succesfull to {}-{}".format(locName,type))
                     logwriter(type,ip,locName,True)
 
 
@@ -137,13 +132,11 @@ def ExcelSaver(df,filename,loctype):
 
 def saveToExcel(query,filename):
 
-
     queryDatas = executor(query)
 
     export = dfConcat(queryDatas[0])
     ad =dfConcat(adlist)
     sc = dfConcat(sclist)
-
 
     FolderCreate(filename,query)
 
@@ -152,13 +145,15 @@ def saveToExcel(query,filename):
     ExcelSaver(export,filename,filename)
     
     locdetailswrite(filename,queryDatas[1])
-    
-
-
-  
-
-    print("Succes savetoExcel")
     listClear()
+    print("******** SAVING SUCCESSFULL ********")
 
 
 
+# saveToExcel(ntb25,"NTB 25% Off Fresh Offer 15-06-2022")
+# saveToExcel(peoples10billvalue,"PEOPLES 10% Bill Value Promo 17-06-2022")
+# saveToExcel(Sampath25FreshOffer,"SAMPATH 25% Off Fresh Offer 16-06-2022")
+# saveToExcel(combank10Billvalue,"COMM 10% Bill Value Promo 18-06-2022")
+# saveToExcel(seylan10BillVAlue,"SEYLAN 10% Bill Value Promo 18-06-2022")
+# saveToExcel(Seylan_10_Debit_CARD,"SEYLAN 10% Debit Card Promo 17-06-2022")
+# saveToExcel(bocTopUP,"BOC Top Up Promotion 04-06-2022 to 18-06-2022")

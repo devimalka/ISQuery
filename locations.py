@@ -5,7 +5,7 @@ locs = {
     'sc':
     { 
     '192.168.31.1':'Kadawatha',
-    '192.168.30.1':'Wattala SC',
+    '192.168.30.1':'Wattala',
     '192.9.246.1': 'Boralesgamuwa',
     '192.9.236.1': 'HPC',
     '192.9.238.1': 'Navinna',
@@ -29,7 +29,7 @@ locs = {
     '192.168.115.1': 'Yakkala',
     '192.168.117.1': 'Kegalle',
     '192.168.37.1': 'Thalawathugoda',
-    '192.168.106.1': 'Wattala 02 SC',
+    '192.168.106.1': 'Wattala 02',
     '192.168.122.1': 'Kochchikade',
     '192.168.136.1': 'Kundasale',
     '192.168.107.1': 'Katugasthota',

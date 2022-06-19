@@ -97,3 +97,52 @@ where a.sbu_code='830' and a.inv_status='VALID' and d.inv_status='VALID' and a.l
 and a.txn_date='2022-06-17' and c.promid in('3144') and b.pay_mode='cr' and b.comp_code='03'
 order by a.loc_code,c.txndat,c.maccod,a.receiptno,a.user_id
 '''
+
+combank10Billvalue = '''
+select a.loc_code,l.loc_name as Location_Name,c.promid,a.txn_date,a.mach_code,a.receiptno,a.user_id,d.net_amt as Bill_NET_Amount,d.TOTAL_DIS as Total_Bill_discount,(d.net_amt+d.total_dis) as Bill_Gross_Value,(a.price*-1) as COMM_Promo_Discount,
+b.amount as COMM_Card_Payment_Amount,b.cardbn,b.lasnum,b.voucherno,b.appcod,b.refnum,b.crdtyp,b.crdnam
+FROM rms_pos_txn_det a
+inner join rms_pospromotxn c
+on a.sbu_code=c.sbucod and a.loc_code=c.loccod and a.txn_date=c.txndat and a.mach_code=c.maccod and a.user_id=c.userid and a.receiptno=c.recino and a.seq_no=c.seqno
+inner join rms_pos_txn_mas d
+on a.sbu_code=d.sbu_code and a.loc_code=d.loc_code and a.txn_date=d.txn_date and a.mach_code=d.mach_code and a.user_id=d.user_id and a.receiptno=d.receiptno
+inner join rms_locations l
+on d.sbu_code=l.sbu_code and d.loc_code=l.loc_code
+left outer join rms_pos_pay_details b
+on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
+where a.sbu_code='830' and a.inv_status='VALID' and d.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
+and a.txn_date='2022-06-18' and c.promid in('3142') and b.pay_mode='cr' and b.comp_code='10'
+order by a.loc_code,c.txndat,c.maccod,a.receiptno,a.user_id
+'''
+
+
+seylan10BillVAlue = '''
+select a.loc_code,l.loc_name as Location_Name,c.promid,a.txn_date,a.mach_code,a.receiptno,a.user_id,d.net_amt as Bill_NET_Amount,d.TOTAL_DIS as Total_Bill_discount,(d.net_amt+d.total_dis) as Bill_Gross_Value,(a.price*-1) as Seylan_Promo_Discount,
+b.amount as Seylan_Card_Payment_Amount,b.cardbn,b.lasnum,b.voucherno,b.appcod,b.refnum,b.crdtyp,b.crdnam
+FROM rms_pos_txn_det a
+inner join rms_pospromotxn c
+on a.sbu_code=c.sbucod and a.loc_code=c.loccod and a.txn_date=c.txndat and a.mach_code=c.maccod and a.user_id=c.userid and a.receiptno=c.recino and a.seq_no=c.seqno
+inner join rms_pos_txn_mas d
+on a.sbu_code=d.sbu_code and a.loc_code=d.loc_code and a.txn_date=d.txn_date and a.mach_code=d.mach_code and a.user_id=d.user_id and a.receiptno=d.receiptno
+inner join rms_locations l
+on d.sbu_code=l.sbu_code and d.loc_code=l.loc_code
+left outer join rms_pos_pay_details b
+on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
+where a.sbu_code='830' and a.inv_status='VALID' and d.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
+and a.txn_date='2022-06-18' and c.promid in('3141') and b.pay_mode='cr' and b.comp_code='03'
+order by a.loc_code,c.txndat,c.maccod,a.receiptno,a.user_id'''
+
+
+bocTopUP = '''
+select a.loc_code,c.promid,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno,d.supplier,a.plu_code,a.item_code,d.itm_desc,a.price,a.qty,(a.price*a.qty) Gross_value,a.disc_per,a.disc_amt as Total_discount,
+(((a.price*a.qty)/100)*15) as BOC_TopUp_Promo_discount,(a.disc_amt-(((a.price*a.qty)/100)*15)) as ARPICO_discount,b.cardbn,b.lasnum
+FROM rms_pos_txn_det a
+inner join rms_pospromotxn c
+on a.sbu_code=c.sbucod and a.loc_code=c.loccod and a.txn_date=c.txndat and a.mach_code=c.maccod and a.user_id=c.userid and a.receiptno=c.recino and a.seq_no=c.seqno
+inner join rms_itmmaster d
+on a.sbu_code=d.sbu_code and a.loc_code=d.loc_code and a.plu_code=d.plu_code and a.item_code=d.item_code
+left outer join rms_pos_pay_details b
+on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
+where a.sbu_code='830' and a.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
+and a.txn_date between '2022-06-04' and '2022-06-18' and c.promid in('2256','2258','2267','2276')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='19'
+order by a.loc_code,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno'''
