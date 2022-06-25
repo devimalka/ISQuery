@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import errorcode
+from numpy import save
 import xlwt
 import pandas as pd
 import openpyxl
@@ -44,6 +45,10 @@ def executor(QUERY):
     dataFrameStack = []
     loccopy = locs
     FailedLocs = {}
+    AdList = []
+    ScList = []
+    FcList = []
+    SrList = []
 
 
     for type,info in loccopy.items():
@@ -141,7 +146,7 @@ def saveToExcel(query,filename):
     FolderCreate(filename,query)
 
     ExcelSaver(ad,filename,'ADA')
-    ExcelSaver(sc,filename,'SALE')
+    ExcelSaver(sc,filename,'Sales')
     ExcelSaver(export,filename,filename)
     
     locdetailswrite(filename,queryDatas[1])
@@ -149,11 +154,6 @@ def saveToExcel(query,filename):
     print("******** SAVING SUCCESSFULL ********")
 
 
-
-# saveToExcel(ntb25,"NTB 25% Off Fresh Offer 15-06-2022")
-# saveToExcel(peoples10billvalue,"PEOPLES 10% Bill Value Promo 17-06-2022")
-# saveToExcel(Sampath25FreshOffer,"SAMPATH 25% Off Fresh Offer 16-06-2022")
-# saveToExcel(combank10Billvalue,"COMM 10% Bill Value Promo 18-06-2022")
-# saveToExcel(seylan10BillVAlue,"SEYLAN 10% Bill Value Promo 18-06-2022")
-# saveToExcel(Seylan_10_Debit_CARD,"SEYLAN 10% Debit Card Promo 17-06-2022")
-# saveToExcel(bocTopUP,"BOC Top Up Promotion 04-06-2022 to 18-06-2022")
+# saveToExcel(ntb25,"NTB 25 OFf fresh Offer 2022-06-22 today")
+# saveToExcel(Sampath25FreshOffer,"Sampath today")
+# saveToExcel(peoples10billvalue,"poeples today")

@@ -62,9 +62,10 @@ def FolderCreate(Filename,query):
 
 
 def locdetailswrite(Filename,loclist):
-    locationsfile = open('{}/failed.txt'.format(Filename),'w')
-    for key,info in loclist.items():
-        for key,value in info.items():
-            locationsfile.write('{}-{}'.format(key,value))
-    locationsfile.close()
-    
+    if (len(loclist) != 0):
+        locationsfile = open('{}/failed.txt'.format(Filename),'w')
+        for key,info in loclist.items():
+            for key,value in info.items():
+                locationsfile.write('{}-{}'.format(key,value))
+        locationsfile.close()
+        

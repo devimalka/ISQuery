@@ -43,7 +43,7 @@ on a.sbu_code=d.sbu_code and a.loc_code=d.loc_code and a.plu_code=d.plu_code and
 left outer join rms_pos_pay_details b
 on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
 where a.sbu_code='830' and a.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
-and a.txn_date in('2022-06-15') and c.promid in('2271')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='17'
+and a.txn_date in('2022-06-22') and c.promid in('2278')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='17'
 order by a.loc_code,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno'''
 
 
@@ -59,7 +59,7 @@ on a.sbu_code=d.sbu_code and a.loc_code=d.loc_code and a.plu_code=d.plu_code and
 left outer join rms_pos_pay_details b
 on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
 where a.sbu_code='830' and a.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
-and a.txn_date='2022-06-16' and c.promid in('2273')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='09'
+and a.txn_date='2022-06-23' and c.promid in('2280')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='09'
 order by a.loc_code,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno
 '''
 
@@ -77,7 +77,7 @@ on d.sbu_code=l.sbu_code and d.loc_code=l.loc_code
 left outer join rms_pos_pay_details b
 on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
 where a.sbu_code='830' and a.inv_status='VALID' and d.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
-and a.txn_date='2022-06-17' and c.promid in('3143') and b.pay_mode='cr' and b.comp_code='04'
+and a.txn_date='2022-06-24' and c.promid in('3148') and b.pay_mode='cr' and b.comp_code='04'
 order by a.loc_code,c.txndat,c.maccod,a.receiptno,a.user_id
 '''
 
@@ -146,3 +146,9 @@ on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and
 where a.sbu_code='830' and a.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
 and a.txn_date between '2022-06-04' and '2022-06-18' and c.promid in('2256','2258','2267','2276')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='19'
 order by a.loc_code,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno'''
+
+
+
+ARPICODIS    = """
+select * from rms_itmmaster
+where plu_code in ('58995','720041','825929') ;"""
