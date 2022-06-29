@@ -3,7 +3,6 @@ from mysql.connector import errorcode
 from numpy import save
 import xlwt
 import pandas as pd
-import openpyxl
 
 from MyLib import *
 from env import *
@@ -38,9 +37,14 @@ def storeViseappend(type,df):
 
 
 
+def ExcelSaver(df,filename):
+    xlswriter = pd.ExcelWriter(filename,engine='xlsxwriter')
+    df.to_excel(xlswriter,index=False)
+    xlswriter.save()
 
 
-def executor(QUERY):
+
+def executor(QUERY,FOLDERNAME):
 
     dataFrameStack = []
     loccopy = locs
@@ -50,9 +54,10 @@ def executor(QUERY):
     FcList = []
     SrList = []
 
+    FolderCreate(FOLDERNAME)
 
     for type,info in loccopy.items():
-        fileChecker(type)
+        CenterWiseFolderCreate(FOLDERNAME,type)
 
         for ip,locName in info.items():
 
@@ -61,7 +66,6 @@ def executor(QUERY):
 
                 if cnx.is_connected():
                     print("Connection Succesfull to {}-{}".format(locName,type))
-                    logwriter(type,ip,locName,True)
 
 
                     location = cnx.cursor(buffered=True)
@@ -77,7 +81,7 @@ def executor(QUERY):
                     df = df.reset_index(drop=True)
                     # print(df)
 
-                    
+                    LocationExcel = FOLDERNAME+'/'+type+'/'+loc+'.xls'
                     
                     if not df.empty:
                         dataFrameStack.append(df)
@@ -88,15 +92,13 @@ def executor(QUERY):
                     field_names = [ i[0] for i in  cursor.description]
                     # print(field_names)
 
-                    xlswriter = pd.ExcelWriter('{}/{}.xls'.format(type,loc),engine='openpyxl')
 
                     if not df.empty:
 
                         df.columns = field_names
-                        df = df.reset_index(drop=True)
-                        df.to_excel(xlswriter,index=False)
+                       
+                        ExcelSaver(df,LocationExcel)
 
-                        xlswriter.save()
                     else:
                         cnx.close()
 
@@ -108,8 +110,7 @@ def executor(QUERY):
                     print("DATABASE does not exist")
                 else:
                     print(err)
-                    print("Connectin Failed to %s"%(locName))
-                    logwriter(type,ip,locName,False)
+                    print("Connection Failed to %s"%(locName))
                     if type not in FailedLocs:
                        FailedLocs[type] = {}
                        FailedLocs[type][ip] = locName
@@ -127,33 +128,35 @@ def executor(QUERY):
 
 
 
-def ExcelSaver(df,filename,loctype):
-    xlswriter = pd.ExcelWriter('{}/{}.xls'.format(filename,loctype),engine='openpyxl')
-    df.to_excel(xlswriter,index=False)
-    xlswriter.save()
-
 
 
 
 def saveToExcel(query,filename):
 
-    queryDatas = executor(query)
+    queryDatas = executor(query,filename)
 
     export = dfConcat(queryDatas[0])
     ad =dfConcat(adlist)
     sc = dfConcat(sclist)
 
-    FolderCreate(filename,query)
+    Folder = filename+'/'+filename
+    
+    FolderCreate(Folder)
+    
+    adfilename = Folder+'/'+'ADA.xls'
+    scfilename = Folder+'/'+'Sales.xls'
+    Fullfile = Folder+'/'+filename+'.xls'
+    ExcelSaver(ad,adfilename)
+    ExcelSaver(sc,scfilename)
+    ExcelSaver(export,Fullfile)
 
-    ExcelSaver(ad,filename,'ADA')
-    ExcelSaver(sc,filename,'Sales')
-    ExcelSaver(export,filename,filename)
+
+
+
     
     locdetailswrite(filename,queryDatas[1])
     listClear()
     print("******** SAVING SUCCESSFULL ********")
 
 
-# saveToExcel(ntb25,"NTB 25 OFf fresh Offer 2022-06-22 today")
-# saveToExcel(Sampath25FreshOffer,"Sampath today")
-# saveToExcel(peoples10billvalue,"poeples today")
+saveToExcel(plu_duplicate,"plu duplicate")

@@ -7,18 +7,12 @@ logfailedls = 'logfailed.txt'
 logsuccessls = 'logsuccess.txt'
 
 
-def fileChecker(ctype):
-    if not os.path.isdir("{}/".format(ctype)):
-        os.makedirs("{}/".format(ctype))
 
-    lsdir = os.listdir('{}/'.format(ctype))
-
-    if logfailedls in lsdir:
-        os.remove("%s/%s"%(ctype,logfailedls))
+def CenterWiseFolderCreate(MainFolder,CenterType):
+    FullPath = MainFolder+'/'+CenterType
+    if not os.path.exists(FullPath):
+        os.makedirs(FullPath)
     
-    if logsuccessls in lsdir:
-        os.remove("%s/%s"%(ctype,logsuccessls))
-        
 
 
 def logwriter(ctype,ip,locName,status):
@@ -52,12 +46,12 @@ def QueryToFilesaver(Filename,query):
     
 
 #create folder
-def FolderCreate(Filename,query):
+def FolderCreate(Filename):
     if os.path.exists(Filename):
         shutil.rmtree(Filename)
     os.makedirs(Filename)
 
-    QueryToFilesaver(Filename,query)
+    
 
 
 

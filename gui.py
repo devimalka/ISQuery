@@ -1,13 +1,42 @@
 
 from PyQt5.QtCore import QSize,Qt
-from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit
+from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox
 from PyQt5.QtGui import QPalette,QColor
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal
 
 import sys
 
+from sqlalchemy import true
 
-from connector import *
+
+
+from Main import *
+
+
+class workerSignals(QObject):
+    finished = pyqtSignal()
+    error = pyqtSignal(tuple)
+    result = pyqtSignal(object)
+    progress = pyqtSignal(int)
+
+
+class Worker(QThread):
+    def __init__(self,query,filename):
+        super(Worker,self).__init__()
+        self.signals = workerSignals()
+        self.query =query
+        self.filename = filename
+        
+        
+    @pyqtSlot()
+    def run(self):
+        try:
+            saveToExcel(self.query,self.filename)
+        except:
+            self.signals.result.emit(self.signals.result)
+        finally:
+            self.signals.finished.emit()
+   
 
 
 class AnotherWindow(QWidget):
@@ -26,10 +55,10 @@ class AnotherWindow(QWidget):
         self.filename = QLineEdit()
         self.layout.addWidget(self.filename)
         
-        self.exportBtn = QPushButton('Export')
+        self.exportBtn = QPushButton('Import')
         self.layout.addWidget(self.exportBtn)
         
-        self.exportBtn.clicked.connect(self.Export)
+        self.exportBtn.clicked.connect(self.IMPORT)
         
         
         
@@ -38,12 +67,29 @@ class AnotherWindow(QWidget):
         self.setLayout(self.layout)
         
         
-    def Export(self):
+    def IMPORT(self):
+        
+        self.textinput.setReadOnly(True)
+        self.filename.setReadOnly(True)
+        
         self.exportBtn.setDisabled(True)    
         self.saveFilename = self.filename.text()
         self.text = self.textinput.toPlainText()
-        # saveToExcel(self.text,)
-        saveToExcel(self.text,self.saveFilename)    
+
+        self.worker = Worker(self.text,self.saveFilename)
+        self.worker.signals.finished.connect(self.complete)
+        self.worker.start()
+       
+       
+    def complete(self):
+        self.msg = QMessageBox()
+        self.msg.setWindowTitle("Status")
+        self.msg.setText("Import Done")
+        self.msg.exec()
+        self.textinput.setReadOnly(False)
+        self.filename.setReadOnly(False)
+        self.exportBtn.setDisabled(False)
+        self.exportBtn.setText("Import Again")
        
 
 
@@ -65,21 +111,23 @@ class MainWindow(QMainWindow):
         #create layout
         self.layout = QVBoxLayout()
 
-        self.button = QPushButton()
-        self.button.setText("Doc Tally")
-        self.layout.addWidget(self.button)
-        self.button.clicked.connect(self.doctally)
+        # self.button = QPushButton()
+        # self.button.setText("Doc Tally")
+        # self.layout.addWidget(self.button)
+        # self.button.clicked.connect(self.runBtn)
 
 
-        self.button2 = QPushButton('Query Export')
+        self.button2 = QPushButton('Query Import')
         self.layout.addWidget(self.button2,2)
-        self.button2.clicked.connect(self.doctally)
+        self.button2.clicked.connect(self.runBtn)
+        
 
         #add layout to central widget
         self.wid.setLayout(self.layout)
 
-    def doctally(self):
-           self.w = AnotherWindow('Query Export')
+    def runBtn(self):
+           self.button2.setDisabled(True)
+           self.w = AnotherWindow('Query Import')
            self.w.show()
 
      
