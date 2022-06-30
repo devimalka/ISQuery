@@ -1,13 +1,12 @@
 import mysql.connector
 from mysql.connector import errorcode
-from numpy import save
 import xlwt
 import pandas as pd
 
 from MyLib import *
 from env import *
 from Queries import *
-from locations import *
+from locations import locs as loccopy
 
 adlist =[]
 sclist = []
@@ -42,12 +41,18 @@ def ExcelSaver(df,filename):
     df.to_excel(xlswriter,index=False)
     xlswriter.save()
 
-
+def listappend(lists):
+    mainlist = []
+    for index in lists:
+        for listitme in index:
+            mainlist.append(listitme)
+            
+    return mainlist
 
 def executor(QUERY,FOLDERNAME):
 
     dataFrameStack = []
-    loccopy = locs
+    loccopyf = loccopy
     FailedLocs = {}
     AdList = []
     ScList = []
@@ -56,7 +61,7 @@ def executor(QUERY,FOLDERNAME):
 
     FolderCreate(FOLDERNAME)
 
-    for type,info in loccopy.items():
+    for type,info in loccopyf.items():
         CenterWiseFolderCreate(FOLDERNAME,type)
 
         for ip,locName in info.items():
@@ -84,7 +89,7 @@ def executor(QUERY,FOLDERNAME):
                     LocationExcel = FOLDERNAME+'/'+type+'/'+loc+'.xls'
                     
                     if not df.empty:
-                        dataFrameStack.append(df)
+                       
                         storeViseappend(type,df)
 
 
@@ -119,10 +124,11 @@ def executor(QUERY,FOLDERNAME):
 
 
 
-            else:
-                cnx.close()
+         
 
-    return [dataFrameStack,FailedLocs]
+    dataFrameStack.append(sclist)
+    dataFrameStack.append(adlist)
+    return [listappend(dataFrameStack),FailedLocs]
 
 
 
@@ -159,4 +165,4 @@ def saveToExcel(query,filename):
     print("******** SAVING SUCCESSFULL ********")
 
 
-saveToExcel(plu_duplicate,"plu duplicate")
+

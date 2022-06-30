@@ -1,9 +1,11 @@
 
+from concurrent.futures import thread
 from PyQt5.QtCore import QSize,Qt
 from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox
 from PyQt5.QtGui import QPalette,QColor
-from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal
+from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal,QRunnable,QThreadPool
 
+from threading import *
 import sys
 
 from sqlalchemy import true
@@ -11,12 +13,14 @@ from sqlalchemy import true
 
 
 from Main import *
-
+from MyLib import *
+from env import *
+from Queries import *
 
 class workerSignals(QObject):
     finished = pyqtSignal()
     error = pyqtSignal(tuple)
-    result = pyqtSignal(object)
+    signalresult = pyqtSignal(object)
     progress = pyqtSignal(int)
 
 
@@ -33,10 +37,11 @@ class Worker(QThread):
         try:
             saveToExcel(self.query,self.filename)
         except:
-            self.signals.result.emit(self.signals.result)
+            self.signals.signalresult.emit()
         finally:
             self.signals.finished.emit()
    
+
 
 
 class AnotherWindow(QWidget):
@@ -63,23 +68,24 @@ class AnotherWindow(QWidget):
         
         
         
-        
         self.setLayout(self.layout)
         
         
+
     def IMPORT(self):
         
-        self.textinput.setReadOnly(True)
-        self.filename.setReadOnly(True)
+        # self.textinput.setReadOnly(True)
+        # self.filename.setReadOnly(True)
         
-        self.exportBtn.setDisabled(True)    
+        # self.exportBtn.setDisabled(True)    
         self.saveFilename = self.filename.text()
         self.text = self.textinput.toPlainText()
 
-        self.worker = Worker(self.text,self.saveFilename)
-        self.worker.signals.finished.connect(self.complete)
-        self.worker.start()
-       
+        # self.worker = Worker(self.text,self.saveFilename)
+        # self.worker.signals.finished.connect(self.complete)
+        # self.worker.start()
+        t1 = Thread(target=saveToExcel(self.text,self.saveFilename))
+        t1.start()
        
     def complete(self):
         self.msg = QMessageBox()
@@ -121,7 +127,6 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.button2,2)
         self.button2.clicked.connect(self.runBtn)
         
-
         #add layout to central widget
         self.wid.setLayout(self.layout)
 
@@ -133,7 +138,7 @@ class MainWindow(QMainWindow):
      
 
 app = QApplication([])
-
+app.processEvents()
 window = MainWindow()
 window.show()
 
