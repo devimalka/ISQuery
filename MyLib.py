@@ -60,6 +60,23 @@ def locdetailswrite(Filename,loclist):
         locationsfile = open('{}/failed.txt'.format(Filename),'w')
         for key,info in loclist.items():
             for key,value in info.items():
-                locationsfile.write('{}-{}'.format(key,value))
+                locationsfile.write('{}-{}\n'.format(key,value))
         locationsfile.close()
         
+        
+def AllLocsIPToList(locationDict,CenterChoices):
+    IpList = []
+    for CenterType,CenterDictInfo in locationDict.items():
+        for ip,LocationName in CenterDictInfo.items():
+            if CenterType in CenterChoices:
+            
+             
+                IpList.append(ip)
+            
+    return IpList
+
+
+def ReturnCenter_Type_Name(ip,locations):
+    for key,values in locations.items():
+        if ip in values:
+            return key,values[ip]

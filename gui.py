@@ -74,18 +74,17 @@ class AnotherWindow(QWidget):
 
     def IMPORT(self):
         
-        # self.textinput.setReadOnly(True)
-        # self.filename.setReadOnly(True)
+        self.textinput.setReadOnly(True)
+        self.filename.setReadOnly(True)
         
-        # self.exportBtn.setDisabled(True)    
+        self.exportBtn.setDisabled(True)    
         self.saveFilename = self.filename.text()
         self.text = self.textinput.toPlainText()
 
-        # self.worker = Worker(self.text,self.saveFilename)
-        # self.worker.signals.finished.connect(self.complete)
-        # self.worker.start()
-        t1 = Thread(target=saveToExcel(self.text,self.saveFilename))
-        t1.start()
+        self.worker = Worker(self.text,self.saveFilename)
+        self.worker.signals.finished.connect(self.complete)
+        self.worker.start()
+       
        
     def complete(self):
         self.msg = QMessageBox()
