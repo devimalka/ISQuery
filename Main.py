@@ -3,137 +3,126 @@ from mysql.connector import errorcode
 import xlwt
 import pandas as pd
 
+from threading import Thread
+
 from MyLib import *
 from env import *
 from Queries import *
-from locations import locs as loccopy
-
-adlist =[]
-sclist = []
-srlist = []
-fclist = []
-
-def listClear():
-    global adlist 
-    adlist= []
-    global sclist
-    sclist= []
-    global srlist 
-    srlist= []
-    global fclist 
-    fclist= []
-
-
-def storeViseappend(type,df):
-    if type=='ad':
-        adlist.append(df)
-    elif type=='sc':
-        sclist.append(df)
-    elif type=='sr':
-        srlist.append(df)
-    elif type=='fc':
-        fclist.append(df)
+from locations import locations as loccopy
 
 
 
-def ExcelSaver(df,filename):
-    xlswriter = pd.ExcelWriter(filename,engine='xlsxwriter')
-    df.to_excel(xlswriter,index=False)
-    xlswriter.save()
+from dataFramesLib import ExcelSaver
 
-def listappend(lists):
-    mainlist = []
-    for index in lists:
-        for listitme in index:
-            mainlist.append(listitme)
-            
-    return mainlist
 
-def executor(QUERY,FOLDERNAME):
 
-    dataFrameStack = []
-    loccopyf = loccopy
-    FailedLocs = {}
-    AdList = []
-    ScList = []
-    FcList = []
-    SrList = []
 
-    FolderCreate(FOLDERNAME)
-    IpList = AllLocsIPToList(loccopyf,['ad','sr'])
-    #  for ip in IpList:
+       
+class MyExcutor():
+    def __init__(self)-> None:
+         pass       
+
+    def executor(self,QUERY,FOLDERNAME):
+        failedlist = []
+        dataFrameStack = []
+        loccopyf = loccopy
+        FailedLocs = {}
         
-    #     CenterWiseFolderCreate(FOLDERNAME,type)
-    for ip in IpList:
-        CenterAndLocName = ReturnCenter_Type_Name(ip,loccopy)
-        locName = CenterAndLocName[1]
-        CenterType = CenterAndLocName[0]
-        CenterWiseFolderCreate(FOLDERNAME,CenterType)
+        #Inside List --When Function finised the Lists are Cleared--
+        ADA_DATA = []
+        SC_DATA = []
+        SR_DATA = []
+        FC_DATA = []
+        
+        connected = 0
+        failed =0
 
-        try:
-                cnx = mysql.connector.connect(user=usr, password=passwd,host=ip, database=db)
+        FolderCreate(FOLDERNAME)
+        
+        IpList = AllLocsIPToList(loccopyf,['sc','ad'])
+        
+        while len(IpList )!= 0:
+            for ip in reversed(IpList):
+                print("IP list len " + str(len(IpList)))
+                CenterAndLocName = ReturnCenter_Type_Name(ip,loccopy)
+                locName = CenterAndLocName[1]
+                CenterType = CenterAndLocName[0]
+                CenterWiseFolderCreate(FOLDERNAME,CenterType)
 
-                if cnx.is_connected():
-                    print("Connection Succesfull to {}-{}".format(locName,CenterType))
+                try:
+                        cnx = mysql.connector.connect(user=usr, password=passwd,host=ip, database=db)
 
+                        if cnx.is_connected():
+                            if ip in failedlist:
+                                failedlist.remove(ip)
+                            print("Connection Succesfull to {}-{}".format(locName,CenterType))
+                            connected +=1
+                            print('conected ' +str(connected))
+                            print('failed ' + str(failed))
 
-                    location = cnx.cursor(buffered=True)
-                    location.execute("SELECT loccod FROM docparameters d limit 1")
+                            location = cnx.cursor(buffered=True)
+                            location.execute("SELECT loccod FROM docparameters d limit 1")
 
+                            loc = location.fetchone()[0]
 
-                    loc = location.fetchone()[0]
+                            cursor = cnx.cursor()
+                            cursor.execute(QUERY)
+                            df = pd.DataFrame(cursor.fetchall())
+                            df = df.reset_index(drop=True)
 
-
-                    cursor = cnx.cursor()
-                    cursor.execute(QUERY)
-                    df = pd.DataFrame(cursor.fetchall())
-                    df = df.reset_index(drop=True)
-                    # print(df)
-
-                    LocationExcel = FOLDERNAME+'/'+CenterType+'/'+loc+'.xls'
-                    
-                    if not df.empty:
-                       
-                        storeViseappend(CenterType,df)
-
-
-
-                    field_names = [ i[0] for i in  cursor.description]
-                    # print(field_names)
-
-
-                    if not df.empty:
-
-                        df.columns = field_names
-                       
-                        ExcelSaver(df,LocationExcel)
-
-                    else:
-                        cnx.close()
-
-        except mysql.connector.Error as err:
-
-                if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                    print("Something wrong with your username or password")
-                elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                    print("DATABASE does not exist")
-                else:
-                    
-                    print(err)
-                    print("Connection Failed to %s"%(locName))
-                    if CenterType not in FailedLocs:
-                       FailedLocs[CenterType] = {}
-                       FailedLocs[CenterType][ip] = locName
-                    else:
-                     FailedLocs[CenterType][ip]= locName
+                            LocationExcel = FOLDERNAME+'/'+CenterType+'/'+loc+'.xls'
+                            
+                            if not df.empty:
+                            
+                                if CenterType == 'ad':
+                                    ADA_DATA.append(df)
+                                if CenterType == 'sc':
+                                    SC_DATA.append(df)
+                                if CenterType == 'sr':
+                                    SR_DATA.append(df)
+                                if CenterType == 'fc':
+                                    FC_DATA.append(df)
 
 
 
-         
+                            field_names = [ i[0] for i in  cursor.description]
 
-    dataFrameStack.append(sclist)
-    dataFrameStack.append(adlist)
-    return [listappend(dataFrameStack),FailedLocs]
+                            if not df.empty:
+
+                                df.columns = field_names
+                            
+                                ExcelSaver(df,LocationExcel)
+                        
+                            else:
+                                cnx.close()
+                            IpList.remove(ip)
+
+                except mysql.connector.Error as err:
+                        failed +=1
+                        print("failed " + str(failed))
+
+                        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                            print("Something wrong with your username or password")
+                        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                            print("DATABASE does not exist")
+                        else:
+                            
+                            print(err)
+                            print("Connection Failed to %s"%(locName))
+                            if ip not in failedlist:
+                                failedlist.append(ip)
+                            if CenterType not in FailedLocs:
+                                FailedLocs[CenterType] = {}
+                                FailedLocs[CenterType][ip] = locName
+                            else:
+                                FailedLocs[CenterType][ip]= locName
+
+                        
+
+        print("last len of list " + str(len(IpList)))
+        dataFrameStack.append(ADA_DATA)
+        dataFrameStack.append(SC_DATA)
+        return [listappend(dataFrameStack),FailedLocs,[ADA_DATA,SC_DATA,SR_DATA,FC_DATA],failedlist]
 
 
 
@@ -143,34 +132,43 @@ def executor(QUERY,FOLDERNAME):
 
 
 def saveToExcel(query,filename):
-
-    queryDatas = executor(query,filename)
-
+    
+    ExcutorObj = MyExcutor()
+    queryDatas = ExcutorObj.executor(query,filename)
     export = dfConcat(queryDatas[0])
-    ad =dfConcat(adlist)
-    sc = dfConcat(sclist)
-
+    Daily_Df =dfConcat(queryDatas[2][0])
+    Super_Df = dfConcat(queryDatas[2][1])
+    Showroom_Df = dfConcat(queryDatas[2][2])
+    Furniture_Df = dfConcat(queryDatas[2][3])
     Folder = filename+'/'+filename
-    
     FolderCreate(Folder)
-    
     adfilename = Folder+'/'+'ADA.xls'
     scfilename = Folder+'/'+'SC.xls'
     Fullfile = Folder+'/'+filename+'.xls'
-    ExcelSaver(ad,adfilename)
-    ExcelSaver(sc,scfilename)
+    ExcelSaver(Daily_Df,adfilename)
+    ExcelSaver(Super_Df,scfilename)
     ExcelSaver(export,Fullfile)
     locdetailswrite(filename,queryDatas[1])
-
-
-
-
-    
-    locdetailswrite(filename,queryDatas[1])
-    listClear()
     print("******** SAVING SUCCESSFULL ********")
+    QueryToFilesaver(Folder,query)
+    loclistwrite(filename,queryDatas[3])
+    
 
 
 
 
-saveToExcel('show tables','test two for ipit')
+thread1 = Thread(target=saveToExcel,args=(dfcc15percent,"DFCC 15"))
+thread2 = Thread(target=saveToExcel,args=(combank10,"Combank 10"))
+thread3 = Thread(target=saveToExcel,args=(ndbbank,"NDB bank"))
+thread4 = Thread(target=saveToExcel,args=(poeple10,"people 10"))
+thread5 = Thread(target=saveToExcel,args=(seylan10billvalue,"seylan 10 bill value"))
+thread6 = Thread(target=saveToExcel,args=(seylandebitcard,'seylan debit card'))
+
+thread1.start()
+thread2.start()
+thread3.start()
+thread4.start()
+thread5.start()
+thread6.start()
+
+

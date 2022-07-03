@@ -3,6 +3,8 @@ from datetime import datetime
 import shutil
 import pandas as pd
 
+
+
 logfailedls = 'logfailed.txt'
 logsuccessls = 'logsuccess.txt'
 
@@ -56,11 +58,13 @@ def FolderCreate(Filename):
 
 
 def locdetailswrite(Filename,loclist):
+    indexid = 1
     if (len(loclist) != 0):
         locationsfile = open('{}/failed.txt'.format(Filename),'w')
         for key,info in loclist.items():
             for key,value in info.items():
-                locationsfile.write('{}-{}\n'.format(key,value))
+                locationsfile.write('{}). [{}] [{}]\n'.format(indexid,key,value))
+                indexid += 1
         locationsfile.close()
         
         
@@ -69,8 +73,6 @@ def AllLocsIPToList(locationDict,CenterChoices):
     for CenterType,CenterDictInfo in locationDict.items():
         for ip,LocationName in CenterDictInfo.items():
             if CenterType in CenterChoices:
-            
-             
                 IpList.append(ip)
             
     return IpList
@@ -80,3 +82,28 @@ def ReturnCenter_Type_Name(ip,locations):
     for key,values in locations.items():
         if ip in values:
             return key,values[ip]
+        
+
+def listappend(lists):
+    mainlist = []
+    for index in lists:
+        for listitme in index:
+            mainlist.append(listitme)
+            
+    return mainlist
+        
+# def StoreWiseAppend(Center_Type,Df):
+#     if Center_Type == 'ad':
+#        ADA_DATA.append(Df)
+#     if Center_Type == 'sc':
+#        SC_DATA.append(Df)
+#     if Center_Type == 'sr':
+#        SR_DATA.append(Df)
+#     if Center_Type == 'fc':
+#        FC_DATA.append(Df)
+
+def loclistwrite(filename,iplist):
+   
+    locationsfile = open('{}/failediplist.txt'.format(filename),'w')
+    for i in iplist:
+         locationsfile.write('{}\n'.format(i))
