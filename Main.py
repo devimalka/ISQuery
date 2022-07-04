@@ -22,7 +22,7 @@ class MyExcutor():
     def __init__(self)-> None:
          pass       
 
-    def executor(self,QUERY,FOLDERNAME):
+    def executor(self,QUERY,FOLDERNAME,fileExtension):
         failedlist = []
         dataFrameStack = []
         loccopyf = loccopy
@@ -70,7 +70,7 @@ class MyExcutor():
                             df = pd.DataFrame(cursor.fetchall())
                             df = df.reset_index(drop=True)
 
-                            LocationExcel = FOLDERNAME+'/'+CenterType+'/'+loc+'.xls'
+                            LocationExcel = FOLDERNAME+'/'+CenterType+'/'+loc+'.'+fileExtension
                             
                             if not df.empty:
                             
@@ -91,7 +91,7 @@ class MyExcutor():
 
                                 df.columns = field_names
                             
-                                ExcelSaver(df,LocationExcel)
+                                ExcelSaver(df,LocationExcel,fileExtension)
                         
                             else:
                                 cnx.close()
@@ -131,10 +131,10 @@ class MyExcutor():
 
 
 
-def saveToExcel(query,filename):
+def saveToExcel(query,filename,fileExtension):
     
     ExcutorObj = MyExcutor()
-    queryDatas = ExcutorObj.executor(query,filename)
+    queryDatas = ExcutorObj.executor(query,filename,fileExtension)
     export = dfConcat(queryDatas[0])
     Daily_Df =dfConcat(queryDatas[2][0])
     Super_Df = dfConcat(queryDatas[2][1])
@@ -145,9 +145,9 @@ def saveToExcel(query,filename):
     adfilename = Folder+'/'+'ADA.xls'
     scfilename = Folder+'/'+'SC.xls'
     Fullfile = Folder+'/'+filename+'.xls'
-    ExcelSaver(Daily_Df,adfilename)
-    ExcelSaver(Super_Df,scfilename)
-    ExcelSaver(export,Fullfile)
+    ExcelSaver(Daily_Df,adfilename,fileExtension)
+    ExcelSaver(Super_Df,scfilename,fileExtension)
+    ExcelSaver(export,Fullfile,fileExtension)
     locdetailswrite(filename,queryDatas[1])
     print("******** SAVING SUCCESSFULL ********")
     QueryToFilesaver(Folder,query)
@@ -156,19 +156,4 @@ def saveToExcel(query,filename):
 
 
 
-
-thread1 = Thread(target=saveToExcel,args=(dfcc15percent,"DFCC 15"))
-thread2 = Thread(target=saveToExcel,args=(combank10,"Combank 10"))
-thread3 = Thread(target=saveToExcel,args=(ndbbank,"NDB bank"))
-thread4 = Thread(target=saveToExcel,args=(poeple10,"people 10"))
-thread5 = Thread(target=saveToExcel,args=(seylan10billvalue,"seylan 10 bill value"))
-thread6 = Thread(target=saveToExcel,args=(seylandebitcard,'seylan debit card'))
-
-thread1.start()
-thread2.start()
-thread3.start()
-thread4.start()
-thread5.start()
-thread6.start()
-
-
+saveToExcel('show tables','filetype test','csv')

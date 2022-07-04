@@ -127,3 +127,34 @@ on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and
 where a.sbu_code='830' and a.inv_status='VALID' and d.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
 and a.txn_date='2022-07-01' and c.promid in('3156') and b.pay_mode='cr' and b.comp_code='04'
 order by a.loc_code,c.txndat,c.maccod,a.receiptno,a.user_id'''
+
+
+boc = '''
+
+select a.loc_code,c.promid,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno,d.supplier,a.plu_code,a.item_code,d.itm_desc,a.price,a.qty,(a.price*a.qty) Gross_value,a.disc_per,a.disc_amt as Total_discount,
+(((a.price*a.qty)/100)*15) as BOC_TopUp_Promo_discount,(a.disc_amt-(((a.price*a.qty)/100)*15)) as ARPICO_discount,b.cardbn,b.lasnum
+FROM rms_pos_txn_det a
+inner join rms_pospromotxn c
+on a.sbu_code=c.sbucod and a.loc_code=c.loccod and a.txn_date=c.txndat and a.mach_code=c.maccod and a.user_id=c.userid and a.receiptno=c.recino and a.seq_no=c.seqno
+inner join rms_itmmaster d
+on a.sbu_code=d.sbu_code and a.loc_code=d.loc_code and a.plu_code=d.plu_code and a.item_code=d.item_code
+left outer join rms_pos_pay_details b
+on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
+where a.sbu_code='830' and a.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
+and a.txn_date in('2022-07-02') and c.promid in('2293')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='19'
+order by a.loc_code,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno'''
+
+
+hnbtopup = '''
+select a.loc_code,c.promid,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno,d.supplier,a.plu_code,a.item_code,d.itm_desc,a.price,a.qty,(a.price*a.qty) Gross_value,a.disc_per,a.disc_amt as Total_discount,
+(((a.price*a.qty)/100)*10) as HNB_TopUp_Promo_discount,(((a.price*a.qty)/100)*10) as ARPICO_TopUp_Promo_discount,b.cardbn,b.lasnum
+FROM rms_pos_txn_det a
+inner join rms_pospromotxn c
+on a.sbu_code=c.sbucod and a.loc_code=c.loccod and a.txn_date=c.txndat and a.mach_code=c.maccod and a.user_id=c.userid and a.receiptno=c.recino and a.seq_no=c.seqno
+inner join rms_itmmaster d
+on a.sbu_code=d.sbu_code and a.loc_code=d.loc_code and a.plu_code=d.plu_code and a.item_code=d.item_code
+left outer join rms_pos_pay_details b
+on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.txn_date=b.txn_date and a.mach_code=b.mach_code and a.user_id=b.user_id and a.receiptno=b.receiptno and b.pay_mode='cr'
+where a.sbu_code='830' and a.inv_status='VALID' and a.loc_code = (select char_val from rms_sys_parameters where para_code='DEFLOC')
+and a.txn_date between '2022-07-02' and '2022-07-03' and c.promid in('2293')  and a.disc_per<>'0' and b.pay_mode='cr' and b.comp_code='08'
+order by a.loc_code,a.txn_date,a.mach_code,a.receiptno,a.user_id,c.seqno'''
