@@ -1,11 +1,6 @@
-*.xls
-*.ini
-*.txt
-*__pycache__
-env.py
-ad/
-sc/
-fc/
 *.spec
+*.txt
 
 */
+!assets/*
+!requirments.txt

@@ -4,7 +4,7 @@ import threading
 import traceback
 from PyQt5.QtCore import QSize,Qt
 from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox,QComboBox,QRadioButton
-from PyQt5.QtGui import QPalette,QColor
+from PyQt5.QtGui import QPalette,QColor,QIcon
 from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal,QRunnable,QThreadPool
 
 from threading import *
@@ -31,6 +31,7 @@ class AnotherWindow(QWidget):
         self.layout = QVBoxLayout()
         self.label = QLabel()
         self.setWindowTitle(windowname)
+        self.setWindowIcon(QIcon('./assets/images/import.png'))
         self.setFixedSize(460,440)
         self.layout.addWidget(self.label)
         
@@ -128,7 +129,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Main Window")
-        
+        self.setWindowIcon(QIcon('./assets/images/window_icon.png'))
         self.setFixedSize(360,360)
 
         #create qwidget because can't add qlayout to mainwindow
