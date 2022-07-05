@@ -3,7 +3,7 @@ from concurrent.futures import thread
 import threading
 import traceback
 from PyQt5.QtCore import QSize,Qt
-from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox,QComboBox
+from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox,QComboBox,QRadioButton
 from PyQt5.QtGui import QPalette,QColor
 from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal,QRunnable,QThreadPool
 
@@ -38,20 +38,30 @@ class AnotherWindow(QWidget):
         self.textinput = QPlainTextEdit()
         self.layout.addWidget(self.textinput)
         
+        self.qhboxlayout1 = QHBoxLayout()
+        self.IterativeRadiobtn1 = QRadioButton('All Locations')
+        self.IterativeRadiobtn2 = QRadioButton('Current Locations')
+        self.IterativeRadiobtn2.setChecked(True)
+       
+        self.qhboxlayout1.addWidget(self.IterativeRadiobtn1)
+        self.qhboxlayout1.addWidget(self.IterativeRadiobtn2)
+        
+        self.layout.addLayout(self.qhboxlayout1)
+        
         # Check boxes
         self.c1 = QCheckBox("sc",self)
         self.c2 = QCheckBox("ad",self)
         self.c3 = QCheckBox("sr",self)
         self.c4 = QCheckBox("fc",self)
         
-        self.hboxlayout = QHBoxLayout()
+        self.hboxlayoutchoices = QHBoxLayout()
         
     
         #adding checkboxes to layout
         self.checkboxlist = [self.c1,self.c2,self.c3,self.c4]
         for cbox in self.checkboxlist:
-            self.hboxlayout.addWidget(cbox)
-        self.layout.addLayout(self.hboxlayout)
+            self.hboxlayoutchoices.addWidget(cbox)
+        self.layout.addLayout(self.hboxlayoutchoices)
 
         # filename 
         self.filename = QLineEdit()
@@ -72,6 +82,12 @@ class AnotherWindow(QWidget):
         
         #setting layout
         self.setLayout(self.layout)
+    
+    def RadioButtonCheck(self):
+        if self.IterativeRadiobtn1.isChecked():
+            return True
+        if self.IterativeRadiobtn2.isChecked():
+            return False
         
         
 
@@ -80,7 +96,6 @@ class AnotherWindow(QWidget):
         for cbox in self.checkboxlist:
             if cbox.isChecked():
                 self.cboxlist.append(cbox.text())
-        print(self.cboxlist)
         self.textinput.setReadOnly(True)
         self.filename.setReadOnly(True)
         
@@ -89,9 +104,10 @@ class AnotherWindow(QWidget):
         self.text = self.textinput.toPlainText()
         self.inputextension = self.extensions.currentText()
         self.getvalue = self.combodict.get(self.inputextension)
-
-        self.tthread = threading.Thread(target=saveToExcel,args=(self.text,self.saveFilename,self.getvalue,self.cboxlist))
-        self.tthread.start()
+        self.truorfalse = self.RadioButtonCheck()
+       
+        self.queryThread = threading.Thread(target=SaveToExcel,args=(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse))
+        self.queryThread.start()
        
        
     def complete(self):
