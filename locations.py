@@ -29,7 +29,6 @@ locations = {
     '192.168.115.1': 'Yakkala',
     '192.168.117.1': 'Kegalle',
     '192.168.37.1': 'Thalawathugoda',
-    '192.168.106.1': 'Wattala 02',
     '192.168.122.1': 'Kochchikade',
     '192.168.136.1': 'Kundasale',
     '192.168.107.1': 'Katugasthota',
@@ -62,6 +61,8 @@ locations = {
     '172.16.19.1': 'Hettipola',
     '172.16.15.1': 'Anuradhapura',
     '172.16.28.1': 'Pelmadulla',
+    '192.168.106.1': 'Wattala 02',
+
     },
 
     'sr': 

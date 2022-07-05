@@ -1,7 +1,9 @@
 
 from concurrent.futures import thread
+import threading
+import traceback
 from PyQt5.QtCore import QSize,Qt
-from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox
+from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox,QComboBox
 from PyQt5.QtGui import QPalette,QColor
 from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal,QRunnable,QThreadPool
 
@@ -17,32 +19,10 @@ from MyLib import *
 from env import *
 from Queries import *
 
-class workerSignals(QObject):
-    finished = pyqtSignal()
-    error = pyqtSignal(tuple)
-    signalresult = pyqtSignal(object)
-    progress = pyqtSignal(int)
 
 
-class Worker(QThread):
-    def __init__(self,query,filename):
-        super(Worker,self).__init__()
-        self.signals = workerSignals()
-        self.query =query
-        self.filename = filename
-        
-        
-    @pyqtSlot()
-    def run(self):
-        try:
-            saveToExcel(self.query,self.filename)
-        except:
-            self.signals.signalresult.emit()
-        finally:
-            self.signals.finished.emit()
-   
 
-
+           
 
 class AnotherWindow(QWidget):
     
@@ -54,36 +34,64 @@ class AnotherWindow(QWidget):
         self.setFixedSize(460,440)
         self.layout.addWidget(self.label)
         
+        # Query
         self.textinput = QPlainTextEdit()
         self.layout.addWidget(self.textinput)
+        
+        # Check boxes
+        self.c1 = QCheckBox("sc",self)
+        self.c2 = QCheckBox("ad",self)
+        self.c3 = QCheckBox("sr",self)
+        self.c4 = QCheckBox("fc",self)
+        
+        self.hboxlayout = QHBoxLayout()
+        
+    
+        #adding checkboxes to layout
+        self.checkboxlist = [self.c1,self.c2,self.c3,self.c4]
+        for cbox in self.checkboxlist:
+            self.hboxlayout.addWidget(cbox)
+        self.layout.addLayout(self.hboxlayout)
 
+        # filename 
         self.filename = QLineEdit()
         self.layout.addWidget(self.filename)
+            
+        # Combo box to show the filetype which need to be saved
+        self.extensions = QComboBox()
+        self.combodict = {'Excel 97-2003 Workbook (*.xls)':'xls','CSV UTF-8 (Comma delimited) (*.csv)':'csv'}
+        self.extensions.addItems(self.combodict)
+        self.layout.addWidget(self.extensions)
         
+        # import button
         self.exportBtn = QPushButton('Import')
-        self.layout.addWidget(self.exportBtn)
+        self.layout.addWidget(self.exportBtn)    
         
-        self.exportBtn.clicked.connect(self.IMPORT)
+        #import function when button clicked  
+        self.exportBtn.clicked.connect(self.IMPORT)   
         
-        
-        
-        
+        #setting layout
         self.setLayout(self.layout)
         
         
 
     def IMPORT(self):
-        
+        self.cboxlist = []
+        for cbox in self.checkboxlist:
+            if cbox.isChecked():
+                self.cboxlist.append(cbox.text())
+        print(self.cboxlist)
         self.textinput.setReadOnly(True)
         self.filename.setReadOnly(True)
         
         self.exportBtn.setDisabled(True)    
         self.saveFilename = self.filename.text()
         self.text = self.textinput.toPlainText()
+        self.inputextension = self.extensions.currentText()
+        self.getvalue = self.combodict.get(self.inputextension)
 
-        self.worker = Worker(self.text,self.saveFilename)
-        self.worker.signals.finished.connect(self.complete)
-        self.worker.start()
+        self.tthread = threading.Thread(target=saveToExcel,args=(self.text,self.saveFilename,self.getvalue,self.cboxlist))
+        self.tthread.start()
        
        
     def complete(self):

@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 import xlwt
 import pandas as pd
-
+from mysql.connector.locales.eng import client_error
 from threading import Thread
 
 from MyLib import *
@@ -22,7 +22,7 @@ class MyExcutor():
     def __init__(self)-> None:
          pass       
 
-    def executor(self,QUERY,FOLDERNAME,fileExtension):
+    def executor(self,QUERY,FOLDERNAME,fileExtension,choicelist):
         failedlist = []
         dataFrameStack = []
         loccopyf = loccopy
@@ -39,7 +39,8 @@ class MyExcutor():
 
         FolderCreate(FOLDERNAME)
         
-        IpList = AllLocsIPToList(loccopyf,['sc','ad'])
+        IpList = AllLocsIPToList(loccopyf,choicelist)
+        IpList.reverse()
         
         while len(IpList )!= 0:
             for ip in reversed(IpList):
@@ -50,7 +51,7 @@ class MyExcutor():
                 CenterWiseFolderCreate(FOLDERNAME,CenterType)
 
                 try:
-                        cnx = mysql.connector.connect(user=usr, password=passwd,host=ip, database=db)
+                        cnx = mysql.connector.connect(user=usr, password=passwd,host=ip, database=db,port=3306)
 
                         if cnx.is_connected():
                             if ip in failedlist:
@@ -61,7 +62,8 @@ class MyExcutor():
                             print('failed ' + str(failed))
 
                             location = cnx.cursor(buffered=True)
-                            location.execute("SELECT loccod FROM docparameters d limit 1")
+                            # location.execute("SELECT loccod FROM docparameters d limit 1")
+                            location.execute("select char_val from rms_sys_parameters where para_code='DEFLOC'")
 
                             loc = location.fetchone()[0]
 
@@ -131,10 +133,10 @@ class MyExcutor():
 
 
 
-def saveToExcel(query,filename,fileExtension):
+def saveToExcel(query,filename,fileExtension,choicelist):
     
     ExcutorObj = MyExcutor()
-    queryDatas = ExcutorObj.executor(query,filename,fileExtension)
+    queryDatas = ExcutorObj.executor(query,filename,fileExtension,choicelist)
     export = dfConcat(queryDatas[0])
     Daily_Df =dfConcat(queryDatas[2][0])
     Super_Df = dfConcat(queryDatas[2][1])
@@ -156,4 +158,3 @@ def saveToExcel(query,filename,fileExtension):
 
 
 
-saveToExcel('show tables','filetype test','csv')

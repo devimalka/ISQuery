@@ -1,3 +1,5 @@
+import encodings
+from operator import index
 import pandas as pd
 
 
@@ -9,7 +11,7 @@ def ExcelSaver(df,filename,fileExtension):
         df.to_excel(xlswriter,index=False)
         xlswriter.save()
     elif fileExtension == 'csv':
-        df.to_csv(filename)
+        df.to_csv(filename,index=False,encoding='utf-8')
         
   
 
