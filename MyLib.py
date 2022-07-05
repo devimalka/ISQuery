@@ -92,15 +92,7 @@ def listappend(lists):
             
     return mainlist
         
-# def StoreWiseAppend(Center_Type,Df):
-#     if Center_Type == 'ad':
-#        ADA_DATA.append(Df)
-#     if Center_Type == 'sc':
-#        SC_DATA.append(Df)
-#     if Center_Type == 'sr':
-#        SR_DATA.append(Df)
-#     if Center_Type == 'fc':
-#        FC_DATA.append(Df)
+
 
 def loclistwrite(filename,iplist):
    

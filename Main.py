@@ -96,7 +96,16 @@ class MySQLImporter():
                 else:
                     print(err)
 
+        if len(self.FailedLocationList)!=0:
+            self.WriteFailedLocations()
         return [self.DataFramesStack,[self.ADA_List,self.SC_List,self.SR_List,self.FC_List],self.FailedLocationList]
+    
+    def WriteFailedLocations(self):
+        self.file = open(self.Filename+'/FailedLocations.txt','w')
+        for ip in self.FailedLocationList:
+            self.file.write('{}\n'.format(ip))
+        self.file.close()
+            
 
     def IterativeOrNotRun(self):
         if self.IterativeOrNot == True:
@@ -104,6 +113,7 @@ class MySQLImporter():
                 return(self.SqlConnector())
         elif self.IterativeOrNot == False:
             return(self.SqlConnector())
+            
 
 
 
@@ -125,15 +135,8 @@ def SaveToExcel(query,filename,choices,fileExtension,iterativeornot):
     ExcelSaver(Daily_Df,adfilename,fileExtension)
     ExcelSaver(Super_Df,scfilename,fileExtension)
     ExcelSaver(export,Fullfile,fileExtension)
-    # locdetailswrite(filename,queryDatas[1])
     print("******** SAVING SUCCESSFULL ********")
     QueryToFilesaver(Folder,query)
-    # loclistwrite(filename,queryDatas[3])
+  
 
 
-
-# testObject = MySQLImporter('show tables;','testontwothree',['ad'],False,'csv')
-# datas=testObject.IterativeOrNotRun()
-# print(datas)
-
-# SaveToExcel('show tables;','testing',['ad'],'xls',False)

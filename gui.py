@@ -139,13 +139,6 @@ class MainWindow(QMainWindow):
         
         #create layout
         self.layout = QVBoxLayout()
-
-        # self.button = QPushButton()
-        # self.button.setText("Doc Tally")
-        # self.layout.addWidget(self.button)
-        # self.button.clicked.connect(self.runBtn)
-
-
         self.button2 = QPushButton('Query Import')
         self.layout.addWidget(self.button2,2)
         self.button2.clicked.connect(self.runBtn)
