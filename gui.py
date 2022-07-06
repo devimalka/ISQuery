@@ -1,15 +1,16 @@
 
 from concurrent.futures import thread
+from email.mime import base
 import threading
 import traceback
 from PyQt5.QtCore import QSize,Qt
 from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox,QComboBox,QRadioButton
 from PyQt5.QtGui import QPalette,QColor,QIcon
 from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal,QRunnable,QThreadPool
-
+import os
 from threading import *
 import sys
-
+basedir = os.path.dirname(__file__)
 from sqlalchemy import true
 
 
@@ -31,7 +32,7 @@ class AnotherWindow(QWidget):
         self.layout = QVBoxLayout()
         self.label = QLabel()
         self.setWindowTitle(windowname)
-        self.setWindowIcon(QIcon('./assets/images/import.png'))
+        self.setWindowIcon(QIcon(os.path.join(basedir,'./images/import.png')))
         self.setFixedSize(460,440)
         self.layout.addWidget(self.label)
         
@@ -97,9 +98,10 @@ class AnotherWindow(QWidget):
         for cbox in self.checkboxlist:
             if cbox.isChecked():
                 self.cboxlist.append(cbox.text())
+        
         self.textinput.setReadOnly(True)
         self.filename.setReadOnly(True)
-        
+        self.checkboxlist.setRead
         self.exportBtn.setDisabled(True)    
         self.saveFilename = self.filename.text()
         self.text = self.textinput.toPlainText()
@@ -129,7 +131,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Main Window")
-        self.setWindowIcon(QIcon('./assets/images/window_icon.png'))
+        self.setWindowIcon(QIcon(os.path.join(basedir,'./images/window_icon.png')))
         self.setFixedSize(360,360)
 
         #create qwidget because can't add qlayout to mainwindow

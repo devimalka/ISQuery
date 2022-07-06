@@ -9,7 +9,7 @@ from threading import Thread
 from MyLib import *
 from env import *
 from locations import LocationDictionary as LocationDict
-from dataFramesLib import ExcelSaver
+from dataFramesLib import ExcelSaver, ListEmptyOrNot
 
 
 class MySQLImporter():
@@ -129,12 +129,10 @@ def SaveToExcel(query,filename,choices,fileExtension,iterativeornot):
     Furniture_Df = dfConcat(queryDatas[1][3])
     Folder = filename+'/'+filename
     FolderCreate(Folder)
-    adfilename = Folder+'/'+'ADA.xls'
-    scfilename = Folder+'/'+'SC.xls'
-    Fullfile = Folder+'/'+filename+'.xls'
-    ExcelSaver(Daily_Df,adfilename,fileExtension)
-    ExcelSaver(Super_Df,scfilename,fileExtension)
-    ExcelSaver(export,Fullfile,fileExtension)
+    ListEmptyOrNot(Folder,fileExtension,'ADA',Daily_Df)
+    ListEmptyOrNot(Folder,fileExtension,'SC',Super_Df)
+    ListEmptyOrNot(Folder,fileExtension,'SR',Showroom_Df)
+    ListEmptyOrNot(Folder,fileExtension,filename,export)
     print("******** SAVING SUCCESSFULL ********")
     QueryToFilesaver(Folder,query)
   

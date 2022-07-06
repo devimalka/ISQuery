@@ -13,3 +13,8 @@ def ExcelSaver(df,filename,fileExtension):
         
   
 
+def ListEmptyOrNot(filename,fileextension,Centertype,dflist):
+    filename = filename + '/'+ Centertype + '.' + fileextension
+    if len(dflist) != 0:
+        ExcelSaver(dflist,filename,fileextension)
+    
