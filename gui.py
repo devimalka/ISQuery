@@ -1,11 +1,13 @@
 
+from cgitb import text
 from concurrent.futures import thread
 from email.mime import base
 import threading
 import traceback
+from unittest import result
 from PyQt5.QtCore import QSize,Qt
 from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox,QComboBox,QRadioButton
-from PyQt5.QtGui import QPalette,QColor,QIcon
+from PyQt5.QtGui import QPalette,QColor,QIcon,QFont
 from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal,QRunnable,QThreadPool
 import os
 from threading import *
@@ -21,8 +23,33 @@ from env import *
 from Queries import *
 
 
+class WorkerSignals(QObject):
+    finished = pyqtSignal()
+    error = pyqtSignal(tuple)
+    result = pyqtSignal(object)
+    progress = pyqtSignal(int)
 
+    
+class Worker(QThread):
+    def __init__(self,query,filename,choices,fileExtension,iterativeornot):
+        super(Worker,self).__init__()
+        self.signals = WorkerSignals()
+        self.query =query
+        self.filename = filename
+        self.choices = choices
+        self.fileExtension = fileExtension
+        self.iterativeornot =iterativeornot
+   
 
+    @pyqtSlot()
+    def run(self):
+         
+        try:
+            SaveToExcel(self.query,self.filename,self.choices,self.fileExtension,self.iterativeornot)
+        except:
+            self.signals.result.emit(1)
+        finally:
+            self.signals.finished.emit()
            
 
 class AnotherWindow(QWidget):
@@ -91,7 +118,11 @@ class AnotherWindow(QWidget):
         if self.IterativeRadiobtn2.isChecked():
             return False
         
+    
+    def setWidgetsDisable(self,widgetlist):
         
+        for widget in widgetlist:
+            widget.setEnabled(False)
 
     def IMPORT(self):
         self.cboxlist = []
@@ -101,8 +132,10 @@ class AnotherWindow(QWidget):
         
         self.textinput.setReadOnly(True)
         self.filename.setReadOnly(True)
-        self.checkboxlist.setRead
-        self.exportBtn.setDisabled(True)    
+        self.setWidgetsDisable([self.exportBtn,self.extensions])
+        self.setWidgetsDisable(self.findChildren(QCheckBox))
+        self.setWidgetsDisable(self.findChildren(QRadioButton))
+        
         self.saveFilename = self.filename.text()
         self.text = self.textinput.toPlainText()
         self.inputextension = self.extensions.currentText()
@@ -111,7 +144,12 @@ class AnotherWindow(QWidget):
        
         self.queryThread = threading.Thread(target=SaveToExcel,args=(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse))
         self.queryThread.start()
-       
+        # self.worker = Worker(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse)
+        # self.worktherad = QThread()
+        # self.worker.moveToThread(self.worktherad)
+        # self.worktherad.started.connect(self.worker.run)
+        # self.worktherad.finished.connect(self.complete)
+        # self.worktherad.start()
        
     def complete(self):
         self.msg = QMessageBox()
@@ -143,6 +181,7 @@ class MainWindow(QMainWindow):
         #create layout
         self.layout = QVBoxLayout()
         self.button2 = QPushButton('Query Import')
+        self.button2.setFont(QFont('SansSerif',10))
         self.layout.addWidget(self.button2,2)
         self.button2.clicked.connect(self.runBtn)
         
