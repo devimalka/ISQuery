@@ -105,6 +105,15 @@ class AnotherWindow(QWidget):
         
         #setting layout
         self.setLayout(self.layout)
+      
+    def closeEvent(self,event):
+        close = QMessageBox.question(self,"QUIT","Are you sure want to stop process?",
+                                     QMessageBox.Yes|QMessageBox.No)
+        if close == QMessageBox.Yes:
+            event.accept()
+            self.worker.quit()
+        else:
+            event.ignore()
     
     def RadioButtonCheck(self):
         if self.IterativeRadiobtn1.isChecked():
@@ -113,10 +122,10 @@ class AnotherWindow(QWidget):
             return False
         
     
-    def setWidgetsDisable(self,widgetlist):
+    def setWidgetsDisableorEnable(self,widgetlist,DisabledOrEnabled):
         
         for widget in widgetlist:
-            widget.setEnabled(False)
+            widget.setEnabled(DisabledOrEnabled)
 
     def importExcel(self):
         self.cboxlist = []
@@ -126,9 +135,10 @@ class AnotherWindow(QWidget):
         
         self.textinput.setReadOnly(True)
         self.filename.setReadOnly(True)
-        self.setWidgetsDisable([self.exportBtn,self.extensions])
-        self.setWidgetsDisable(self.findChildren(QCheckBox))
-        self.setWidgetsDisable(self.findChildren(QRadioButton))
+        
+        self.setWidgetsDisableorEnable([self.exportBtn,self.extensions],False)
+        self.setWidgetsDisableorEnable(self.findChildren(QCheckBox),False)
+        self.setWidgetsDisableorEnable(self.findChildren(QRadioButton),False)
         
         self.saveFilename = self.filename.text()
         self.text = self.textinput.toPlainText()
@@ -139,6 +149,7 @@ class AnotherWindow(QWidget):
         self.worker = Worker(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse)
         self.worker.finished.connect(self.complete)
         self.worker.start()
+        
        
     def complete(self):
         self.msg = QMessageBox()
