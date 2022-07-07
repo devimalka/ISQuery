@@ -1,5 +1,4 @@
 
-from cgitb import text
 from concurrent.futures import thread
 from email.mime import base
 import threading
@@ -43,13 +42,8 @@ class Worker(QThread):
 
     @pyqtSlot()
     def run(self):
-         
-        try:
-            SaveToExcel(self.query,self.filename,self.choices,self.fileExtension,self.iterativeornot)
-        except:
-            self.signals.result.emit(1)
-        finally:
-            self.signals.finished.emit()
+        SaveToExcel(self.query,self.filename,self.choices,self.fileExtension,self.iterativeornot)
+  
            
 
 class AnotherWindow(QWidget):
@@ -107,7 +101,7 @@ class AnotherWindow(QWidget):
         self.layout.addWidget(self.exportBtn)    
         
         #import function when button clicked  
-        self.exportBtn.clicked.connect(self.IMPORT)   
+        self.exportBtn.clicked.connect(self.importExcel)   
         
         #setting layout
         self.setLayout(self.layout)
@@ -124,7 +118,7 @@ class AnotherWindow(QWidget):
         for widget in widgetlist:
             widget.setEnabled(False)
 
-    def IMPORT(self):
+    def importExcel(self):
         self.cboxlist = []
         for cbox in self.checkboxlist:
             if cbox.isChecked():
@@ -141,15 +135,10 @@ class AnotherWindow(QWidget):
         self.inputextension = self.extensions.currentText()
         self.getvalue = self.combodict.get(self.inputextension)
         self.truorfalse = self.RadioButtonCheck()
-       
-        self.queryThread = threading.Thread(target=SaveToExcel,args=(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse))
-        self.queryThread.start()
-        # self.worker = Worker(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse)
-        # self.worktherad = QThread()
-        # self.worker.moveToThread(self.worktherad)
-        # self.worktherad.started.connect(self.worker.run)
-        # self.worktherad.finished.connect(self.complete)
-        # self.worktherad.start()
+
+        self.worker = Worker(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse)
+        self.worker.finished.connect(self.complete)
+        self.worker.start()
        
     def complete(self):
         self.msg = QMessageBox()

@@ -3,19 +3,19 @@ select a.doc_code,k.doc_name,count(b.doc_code),round(sum((b.price*b.qty)-(b.pric
 from rms_doc_txnm a
 inner join rms_doc_txnd b on a.sbu_code=b.sbu_code and a.loc_code=b.loc_code and a.doc_code=b.doc_code and a.doc_no=b.doc_no
 inner join rms_doc_codes k on a.sbu_code=k.sbu_code and a.doc_code=k.doc_code
-where a.sbu_code='830' and a.loc_code='{loccode}' and a.mstat='VAL' and a.txn_date between '{sdate}' and '{edate} 23:59:59' group by a.doc_code
+where a.sbu_code='830' and a.loc_code=(select char_val from rms_sys_parameters where para_code='DEFLOC') and a.mstat='VAL' and a.txn_date between '2022-06-01' and '2022-06-15 23:59:59' group by a.doc_code
 union
 select c.doc_code,k.doc_name,count(c.doc_code),round(sum((d.rate*d.qty)-(d.rate*d.qty*d.disrate/100)),2) as value
 from rms_grn_txnm c
 inner join rms_grn_txnd d on c.sbu_code=d.sbu_code and c.loc_code=d.loc_code and c.doc_code=d.doc_code and c.doc_no=d.doc_no
 inner join rms_doc_codes k on c.sbu_code=k.sbu_code and c.doc_code=k.doc_code
-where c.sbu_code='830' and c.loc_code='{loccode}'
-and DATE_FORMAT(c.txn_date,'%Y-%M-%D') between '{sdate}' and '{edate} 23:59:59' group by c.doc_code
+where c.sbu_code='830' and c.loc_code=(select char_val from rms_sys_parameters where para_code='DEFLOC')
+and DATE_FORMAT(c.txn_date,'%Y-%M-%D') between '2022-06-01' and '2022-06-15 23:59:59' group by c.doc_code
 union
 select e.doc_code,k.doc_name,count(e.doc_code) ,sum(e.rec_amt) as value from rms_recm e
 inner join rms_recd f on e.sbu_code=f.sbu_code and e.loc_code=f.loc_code and e.doc_code=f.doc_code and e.doc_no=f.doc_no
 inner join rms_doc_codes k on e.sbu_code=k.sbu_code and e.doc_code=k.doc_code
-where e.sbu_code='830' and e.loc_code='{loccode}' and e.mstat<>'CAN' and e.txn_date between '{sdate}' and '{edate} 23:59:59'
+where e.sbu_code='830' and e.loc_code=(select char_val from rms_sys_parameters where para_code='DEFLOC') and e.mstat<>'CAN' and e.txn_date between '2022-06-01' and '2022-06-15 23:59:59'
 group by e.doc_code
 '''
 
