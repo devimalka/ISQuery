@@ -56,7 +56,8 @@ class AnotherWindow(QWidget):
         self.setWindowIcon(QIcon(os.path.join(basedir,'./images/import.png')))
         self.setFixedSize(460,440)
         self.layout.addWidget(self.label)
-        
+        self.worker = None
+        self.isClosed = False
         # Query
         self.textinput = QPlainTextEdit()
         self.layout.addWidget(self.textinput)
@@ -76,6 +77,8 @@ class AnotherWindow(QWidget):
         self.c2 = QCheckBox("ad",self)
         self.c3 = QCheckBox("sr",self)
         self.c4 = QCheckBox("fc",self)
+        
+        self.c1.setChecked(True)
         
         self.hboxlayoutchoices = QHBoxLayout()
         
@@ -107,14 +110,25 @@ class AnotherWindow(QWidget):
         self.setLayout(self.layout)
       
     def closeEvent(self,event):
-        close = QMessageBox.question(self,"QUIT","Are you sure want to stop process?",
-                                     QMessageBox.Yes|QMessageBox.No)
-        if close == QMessageBox.Yes:
+        if self.worker is None:
             event.accept()
-            self.worker.quit()
+            self.isClosed = True
+        elif self.worker.isRunning():
+            self.close = QMessageBox.question(self,"QUIT","Are you sure want to stop process?",
+                                     QMessageBox.Yes|QMessageBox.No)
+            if self.close == QMessageBox.Yes:
+                    self.worker.terminate()
+                    event.accept()
+                    self.isClosed = True
+            elif self.close == QMessageBox.No:
+                event.ignore()
+        elif self.worker.isFinished():
+            self.isClosed = True
+            event.accept()
         else:
             event.ignore()
-    
+           
+      
     def RadioButtonCheck(self):
         if self.IterativeRadiobtn1.isChecked():
             return True
@@ -147,6 +161,7 @@ class AnotherWindow(QWidget):
         self.truorfalse = self.RadioButtonCheck()
 
         self.worker = Worker(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse)
+      
         self.worker.finished.connect(self.complete)
         self.worker.start()
         
@@ -154,12 +169,15 @@ class AnotherWindow(QWidget):
     def complete(self):
         self.msg = QMessageBox()
         self.msg.setWindowTitle("Status")
-        self.msg.setText("Import Done")
+        self.msg.setText("Import Done!")
         self.msg.exec()
-        self.textinput.setReadOnly(False)
+        self.setWidgetsDisableorEnable([self.exportBtn,self.extensions],True)
+        self.setWidgetsDisableorEnable(self.findChildren(QCheckBox),True)
+        self.setWidgetsDisableorEnable(self.findChildren(QRadioButton),True)
         self.filename.setReadOnly(False)
-        self.exportBtn.setDisabled(False)
+        self.textinput.setReadOnly(False)        
         self.exportBtn.setText("Import Again")
+     
        
 
 
@@ -172,6 +190,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(os.path.join(basedir,'./images/window_icon.png')))
         self.setFixedSize(360,360)
 
+        self.windowlist = []
         #create qwidget because can't add qlayout to mainwindow
         self.wid = QWidget()
 
@@ -187,11 +206,17 @@ class MainWindow(QMainWindow):
         
         #add layout to central widget
         self.wid.setLayout(self.layout)
+       
 
     def runBtn(self):
-           self.button2.setDisabled(True)
+          
            self.w = AnotherWindow('Query Import')
-           self.w.show()
+           self.windowlist.append(self.w)
+           for w in reversed(self.windowlist):
+               if w.isClosed == True:
+                   self.windowlist.remove(w)
+               else:
+                   w.show()
 
      
 

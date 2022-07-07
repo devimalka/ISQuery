@@ -5,6 +5,7 @@ import xlwt
 import pandas as pd
 from mysql.connector.locales.eng import client_error
 from threading import Thread
+import os
 
 from MyLib import *
 from env import *
@@ -15,7 +16,10 @@ from dataFramesLib import ExcelSaver, ListEmptyOrNot
 class MySQLImporter():
     def __init__(self,Query,Filename,choices,FileExtension,IterativeOrNot):
         self.DataFramesStack = []
-        self.Filename = Filename
+        
+        self.userdir = os.path.expanduser('~')
+        self.userdir = self.userdir+'\\Documents\\'
+        self.Filename = self.userdir+Filename
         self.choices = choices
         self.IterativeOrNot = IterativeOrNot
         self.LocationDictionary = LocationDict
