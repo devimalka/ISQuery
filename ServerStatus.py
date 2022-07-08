@@ -1,4 +1,3 @@
-import socket
 import mysql.connector 
 from locations import LocationDictionary
 
@@ -9,38 +8,7 @@ import os
 
 os.system('color')
 
-# def serverDownOrUp(iplist):
 
-#     while True:
-#         for tp,ip_info in iplist.items():
-
-#             for ip,name in ip_info.items():
-
-#                 try:
-                    
-
-#                 except:
-                    
-
-# def ping_server(server:str,port:int,timeout=3):
-#     try:
-#         socket.setdefaulttimeout(timeout)
-#         s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-#         s.connect((server,port))
-#         print("successs")
-#     except OSError as error:
-#         return False
-#     else:
-#         s.close()
-#         return True
-
-
-
-
-
-
-
-# ping_server('192.9.236.1',3306)
 
 class serverUPorDown():
     def __init__(self,iplist):
