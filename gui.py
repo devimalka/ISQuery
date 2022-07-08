@@ -159,7 +159,7 @@ class AnotherWindow(QWidget):
         self.inputextension = self.extensions.currentText()
         self.getvalue = self.combodict.get(self.inputextension)
         self.truorfalse = self.RadioButtonCheck()
-
+        print(self.truorfalse)
         self.worker = Worker(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse)
       
         self.worker.finished.connect(self.complete)

@@ -1,4 +1,3 @@
-from cProfile import run
 import mysql.connector
 from mysql.connector import errorcode
 import xlwt
@@ -7,6 +6,7 @@ from mysql.connector.locales.eng import client_error
 from threading import Thread
 import os
 
+from Queries import *
 from MyLib import *
 from env import *
 from locations import LocationDictionary as LocationDict
@@ -28,7 +28,8 @@ class MySQLImporter():
         self.Query = Query
         self.FileExtension = FileExtension
         self.FailedLocationList = []
-
+        FolderCreate(self.Filename)
+        
         self.ADA_List = []
         self.SC_List  = []
         self.SR_List  = []
@@ -53,7 +54,7 @@ class MySQLImporter():
 
     def SqlConnector(self):
        
-        FolderCreate(self.Filename)
+        
         for ip in reversed(self.IPLists):
             CenterAndLocationName = ReturnCenter_Type_Name(ip,self.LocationDictionary)
             Center_Type = CenterAndLocationName[0]
@@ -112,13 +113,14 @@ class MySQLImporter():
             
 
     def IterativeOrNotRun(self):
+        SqlConnectorResults = None
         if self.IterativeOrNot == True:
             while len(self.IPLists) != 0:
-                return(self.SqlConnector())
+                data =self.SqlConnector()
         elif self.IterativeOrNot == False:
-            return(self.SqlConnector())
+                data = self.SqlConnector()
             
-
+        return SqlConnectorResults
 
 
 

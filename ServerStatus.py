@@ -28,7 +28,7 @@ class serverUPorDown():
                         if connection.is_connected():
                             self.appendtolist(ip,'active')
                             self.removefromlist(ip,'failed')
-                            print("Connection success to {:^15}{:<20} All Active count [{:<2}] Failed Count [{:>2}]".format(name,tp,len(self.active),len(self.failedlist)))
+                            print("Connection success to  {:^16}{:<20} All Active count [{:<2}] Failed Count [{:>2}]".format(name,tp,len(self.active),len(self.failedlist)))
                             connection.close()
                             time.sleep(1)
 
@@ -36,14 +36,14 @@ class serverUPorDown():
                         self.appendtolist(ip,'failed')
                         self.removefromlist(ip,'active')
                         # print("f{bcolors.FAIL}connection failed to %s %s{bcolors.ENDC}"%(name,tp))
-                        print(bcolors.FAIL+"Connection Failed  to {:^15}{:<20} All Active count [{:<2}] Failed Count [{:>2}]".format(name,tp,len(self.active),len(self.failedlist))+bcolors.ENDC)
+                        print(bcolors.FAIL+"Connection Failed  to  {:^16}{:<20} All Active count [{:<2}] Failed Count [{:>2}]".format(name,tp,len(self.active),len(self.failedlist))+bcolors.ENDC)
 
 
     def appendtolist(self,ip,listype):
         if listype == 'failed':
             if ip not in self.failedlist:
                 self.failedlist.append(ip)
-        else:
+        elif listype == 'active':
             if ip not in self.active:
                 self.active.append(ip)
             
@@ -51,7 +51,7 @@ class serverUPorDown():
         if listype == 'failed':
             if ip in self.failedlist:
                 self.failedlist.remove(ip) 
-        else:
+        elif listype == 'active':
             if ip in self.active:
                 self.active.remove(ip)     
                 
