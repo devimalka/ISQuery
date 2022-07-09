@@ -1,3 +1,4 @@
+from msilib.schema import File
 import os
 from datetime import datetime
 import shutil

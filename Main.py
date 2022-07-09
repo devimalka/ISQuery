@@ -19,7 +19,7 @@ class MySQLImporter():
         
         self.userdir = os.path.expanduser('~')
         self.userdir = self.userdir+'\\Documents\\'
-        self.Filename =Filename
+        self.Filename =self.userdir+Filename
         self.choices = choices
         self.IterativeOrNot = IterativeOrNot
         self.LocationDictionary = LocationDict

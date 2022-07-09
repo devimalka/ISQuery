@@ -14,12 +14,13 @@ basedir = os.path.dirname(__file__)
 from sqlalchemy import true
 
 
-
 from Main import *
 from MyLib import *
 from env import *
 from Queries import *
-
+import ctypes
+myappid = u'mycompany.myproduct.subproduct.version' # arbitrary string
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     
 
@@ -131,7 +132,9 @@ class AnotherWindow(QWidget):
                     print("Process Terminated!")
             elif self.close == QMessageBox.No:
                 event.ignore()
-       
+        elif self.worker.isFinished():
+            event.accept()
+            self.isClosed = True
         else:
             event.ignore()
            
@@ -214,6 +217,9 @@ class MainWindow(QMainWindow):
         self.wid.setLayout(self.layout)
        
 
+    def closeEvent(self,event):
+        event.accept()
+    
     def runBtn(self):
           
            self.w = AnotherWindow('Query Import')
