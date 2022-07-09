@@ -19,7 +19,7 @@ class MySQLImporter():
         
         self.userdir = os.path.expanduser('~')
         self.userdir = self.userdir+'\\Documents\\'
-        self.Filename =self.userdir+Filename
+        self.Filename = Filename
         self.choices = choices
         self.IterativeOrNot = IterativeOrNot
         self.LocationDictionary = LocationDict
@@ -124,7 +124,6 @@ class MySQLImporter():
         elif self.IterativeOrNot == False:
                 SqlConnectorResults = self.SqlConnector()
                 self.WriteFailedLocations()
-        print(self.DataFramesStack,self.Filename)
         return SqlConnectorResults
 
 
