@@ -19,7 +19,7 @@ class MySQLImporter():
         
         self.userdir = os.path.expanduser('~')
         self.userdir = self.userdir+'\\Documents\\'
-        self.Filename = self.userdir+Filename
+        self.Filename =Filename
         self.choices = choices
         self.IterativeOrNot = IterativeOrNot
         self.LocationDictionary = LocationDict
@@ -94,6 +94,9 @@ class MySQLImporter():
 
             except mysql.connector.Error as err:
                 self.AddFailedIp(ip)
+                print("\nConnection Failed To {} : {}".format(Location_Name,Center_Type))
+                print("Remaining Location Count {}".format(len(self.IPLists)))
+                print("Failed Location Count {}\n".format(len(self.FailedLocationList)))
                 if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                     print("Something Wrong With Your Username Or Password")
                 elif err.errno == errorcode.ER_BAD_DB_ERROR:
@@ -101,46 +104,51 @@ class MySQLImporter():
                 else:
                     print(err)
 
-        if len(self.FailedLocationList)!=0:
-            self.WriteFailedLocations()
+        
         return [self.DataFramesStack,[self.ADA_List,self.SC_List,self.SR_List,self.FC_List],self.FailedLocationList]
     
     def WriteFailedLocations(self):
-        self.file = open(self.Filename+'/FailedLocations.txt','w')
-        for ip in self.FailedLocationList:
-            self.file.write('{}\n'.format(ip))
-        self.file.close()
+        if len(self.FailedLocationList) != 0:
+            self.file = open(self.Filename+'/FailedLocations.txt','w')
+            for ip in self.FailedLocationList:
+                self.file.write('{}\n'.format(ip))
+            self.file.close()
             
 
     def IterativeOrNotRun(self):
         SqlConnectorResults = None
         if self.IterativeOrNot == True:
             while len(self.IPLists) != 0:
-                data =self.SqlConnector()
+                SqlConnectorResults =self.SqlConnector()
+                self.WriteFailedLocations()
         elif self.IterativeOrNot == False:
-                data = self.SqlConnector()
-            
+                SqlConnectorResults = self.SqlConnector()
+                self.WriteFailedLocations()
+        print(self.DataFramesStack,self.Filename)
         return SqlConnectorResults
 
 
 
-def SaveToExcel(query,filename,choices,fileExtension,iterativeornot):
+def SaveToExcel(Query,Filename,choices,FileExtension,IterativeOrNot):
 
-    testobj = MySQLImporter(query,filename,choices,fileExtension,iterativeornot)
+    testobj = MySQLImporter(Query,Filename,choices,FileExtension,IterativeOrNot)
     queryDatas = testobj.IterativeOrNotRun()
+    print(type(queryDatas))
+    print("qyry",queryDatas)
     export = dfConcat(queryDatas[0])
     Daily_Df =dfConcat(queryDatas[1][0])
     Super_Df = dfConcat(queryDatas[1][1])
     Showroom_Df = dfConcat(queryDatas[1][2])
     Furniture_Df = dfConcat(queryDatas[1][3])
-    Folder = filename+'/'+filename
+    Folder = Filename+'/'+Filename
     FolderCreate(Folder)
-    ListEmptyOrNot(Folder,fileExtension,'ADA',Daily_Df)
-    ListEmptyOrNot(Folder,fileExtension,'SC',Super_Df)
-    ListEmptyOrNot(Folder,fileExtension,'SR',Showroom_Df)
-    ListEmptyOrNot(Folder,fileExtension,filename,export)
+    ListEmptyOrNot(Folder,FileExtension,'ADA',Daily_Df)
+    ListEmptyOrNot(Folder,FileExtension,'SC',Super_Df)
+    ListEmptyOrNot(Folder,FileExtension,'SR',Showroom_Df)
+    ListEmptyOrNot(Folder,FileExtension,Filename,export)
+    QueryToFilesaver(Folder,Query)
+
     print("******** SAVING SUCCESSFULL ********")
-    QueryToFilesaver(Folder,query)
   
 
 

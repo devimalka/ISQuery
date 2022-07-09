@@ -1,13 +1,12 @@
-
 from concurrent.futures import thread
 from email.mime import base
 import threading
 import traceback
 from unittest import result
 from PyQt5.QtCore import QSize,Qt
-from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox,QComboBox,QRadioButton
-from PyQt5.QtGui import QPalette,QColor,QIcon,QFont
-from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal,QRunnable,QThreadPool
+from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow,QPushButton,QLabel,QCheckBox,QBoxLayout,QVBoxLayout,QHBoxLayout,QPlainTextEdit,QLineEdit,QMessageBox,QComboBox,QRadioButton,QTextEdit
+from PyQt5.QtGui import QPalette,QColor,QIcon,QFont,QSyntaxHighlighter,QTextCursor
+from PyQt5.QtCore import pyqtSlot,QObject,QThread,pyqtSignal,QRunnable,QThreadPool,QProcess
 import os
 from threading import *
 import sys
@@ -22,6 +21,10 @@ from env import *
 from Queries import *
 
 
+    
+
+
+
 class WorkerSignals(QObject):
     finished = pyqtSignal()
     error = pyqtSignal(tuple)
@@ -30,21 +33,20 @@ class WorkerSignals(QObject):
 
     
 class Worker(QThread):
-    def __init__(self,query,filename,choices,fileExtension,iterativeornot):
+    def __init__(self,fn,**kwargs):
         super(Worker,self).__init__()
         self.signals = WorkerSignals()
-        self.query =query
-        self.filename = filename
-        self.choices = choices
-        self.fileExtension = fileExtension
-        self.iterativeornot =iterativeornot
-   
+        self.fn = fn
+        self.kwargs = kwargs
+        
 
     @pyqtSlot()
     def run(self):
-        SaveToExcel(self.query,self.filename,self.choices,self.fileExtension,self.iterativeornot)
-  
-           
+        try:
+            self.fn(**self.kwargs)
+        except:
+            print("Something went wrong with the Qthread worker class")
+               
 
 class AnotherWindow(QWidget):
     
@@ -54,13 +56,15 @@ class AnotherWindow(QWidget):
         self.label = QLabel()
         self.setWindowTitle(windowname)
         self.setWindowIcon(QIcon(os.path.join(basedir,'./images/import.png')))
-        self.setFixedSize(460,440)
+        self.setFixedSize(560,540)
         self.layout.addWidget(self.label)
         self.worker = None
         self.isClosed = False
         # Query
         self.textinput = QPlainTextEdit()
         self.layout.addWidget(self.textinput)
+        
+    
         
         self.qhboxlayout1 = QHBoxLayout()
         self.IterativeRadiobtn1 = QRadioButton('All Locations')
@@ -102,12 +106,16 @@ class AnotherWindow(QWidget):
         # import button
         self.exportBtn = QPushButton('Import')
         self.layout.addWidget(self.exportBtn)    
+    
         
         #import function when button clicked  
         self.exportBtn.clicked.connect(self.importExcel)   
         
         #setting layout
         self.setLayout(self.layout)
+        
+
+        
       
     def closeEvent(self,event):
         if self.worker is None:
@@ -120,11 +128,10 @@ class AnotherWindow(QWidget):
                     self.worker.terminate()
                     event.accept()
                     self.isClosed = True
+                    print("Process Terminated!")
             elif self.close == QMessageBox.No:
                 event.ignore()
-        elif self.worker.isFinished():
-            self.isClosed = True
-            event.accept()
+       
         else:
             event.ignore()
            
@@ -159,13 +166,12 @@ class AnotherWindow(QWidget):
         self.inputextension = self.extensions.currentText()
         self.getvalue = self.combodict.get(self.inputextension)
         self.truorfalse = self.RadioButtonCheck()
-        print(self.truorfalse)
-        self.worker = Worker(self.text,self.saveFilename,self.cboxlist,self.getvalue,self.truorfalse)
+        self.kwargs = {'Query':self.text,'Filename':self.saveFilename,'choices':self.cboxlist,'FileExtension':self.getvalue,'IterativeOrNot':self.truorfalse}
+        self.worker = Worker(SaveToExcel,**self.kwargs)
       
         self.worker.finished.connect(self.complete)
         self.worker.start()
-        
-       
+  
     def complete(self):
         self.msg = QMessageBox()
         self.msg.setWindowTitle("Status")

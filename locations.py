@@ -83,7 +83,6 @@ LocationDictionary = {
     'fc':
     {
         '192.168.23.1':'Anuradhapura',
-        '192.9.242.1':'Kandy Fc'
     }
  }
 
