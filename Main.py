@@ -120,10 +120,10 @@ class MySQLImporter():
         if self.IterativeOrNot == True:
             while len(self.IPLists) != 0:
                 SqlConnectorResults =self.SqlConnector()
-                self.WriteFailedLocations()
         elif self.IterativeOrNot == False:
                 SqlConnectorResults = self.SqlConnector()
-                self.WriteFailedLocations()
+                
+        self.WriteFailedLocations()
         return SqlConnectorResults
 
 
@@ -132,8 +132,6 @@ def SaveToExcel(Query,Filename,choices,FileExtension,IterativeOrNot):
 
     testobj = MySQLImporter(Query,Filename,choices,FileExtension,IterativeOrNot)
     queryDatas = testobj.IterativeOrNotRun()
-    print(type(queryDatas))
-    print("qyry",queryDatas)
     export = dfConcat(queryDatas[0])
     Daily_Df =dfConcat(queryDatas[1][0])
     Super_Df = dfConcat(queryDatas[1][1])
@@ -147,7 +145,7 @@ def SaveToExcel(Query,Filename,choices,FileExtension,IterativeOrNot):
     ListEmptyOrNot(Folder,FileExtension,Filename,export)
     QueryToFilesaver(Folder,Query)
 
-    print("******** SAVING SUCCESSFULL ********")
+    print("******** SAVING SUCCESSFULL {}********".format(Filename.upper()))
   
 
 
