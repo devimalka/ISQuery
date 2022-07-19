@@ -100,7 +100,7 @@ class AnotherWindow(QWidget):
             
         # Combo box to show the filetype which need to be saved
         self.extensions = QComboBox()
-        self.combodict = {'Excel 97-2003 Workbook (*.xls)':'xls','CSV UTF-8 (Comma delimited) (*.csv)':'csv'}
+        self.combodict = {'Microsoft Excel Worksheet (.xlsx)':'xlsx','Excel 97-2003 Workbook (*.xls)':'xls','CSV UTF-8 (Comma delimited) (*.csv)':'csv'}
         self.extensions.addItems(self.combodict)
         self.layout.addWidget(self.extensions)
         

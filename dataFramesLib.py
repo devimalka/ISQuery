@@ -4,7 +4,7 @@ import pandas as pd
 def ExcelSaver(df,filename,fileExtension):
     
    
-    if fileExtension =='xls':
+    if fileExtension =='xls' or 'xlsx':
         xlswriter = pd.ExcelWriter(filename,engine='xlsxwriter')
         df.to_excel(xlswriter,index=False)
         xlswriter.save()
