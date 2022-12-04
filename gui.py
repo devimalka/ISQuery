@@ -17,7 +17,6 @@ from sqlalchemy import true
 from Main import *
 from MyLib import *
 from env import *
-from Queries import *
 import ctypes
 myappid = u'mycompany.myproduct.subproduct.version' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
@@ -81,7 +80,7 @@ class AnotherWindow(QWidget):
         self.c1 = QCheckBox("sc",self)
         self.c2 = QCheckBox("ad",self)
         self.c3 = QCheckBox("sr",self)
-        self.c4 = QCheckBox("fc",self)
+        # self.c4 = QCheckBox("fc",self)
         
         self.c1.setChecked(True)
         
@@ -89,7 +88,7 @@ class AnotherWindow(QWidget):
         
     
         #adding checkboxes to layout
-        self.checkboxlist = [self.c1,self.c2,self.c3,self.c4]
+        self.checkboxlist = [self.c1,self.c2,self.c3]
         for cbox in self.checkboxlist:
             self.hboxlayoutchoices.addWidget(cbox)
         self.layout.addLayout(self.hboxlayoutchoices)

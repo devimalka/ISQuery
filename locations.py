@@ -33,6 +33,7 @@ LocationDictionary = {
     '192.168.136.1': 'Kundasale',
     '192.168.107.1': 'Katugasthota',
     '192.168.130.1':'Minuwangoda',
+    '192.168.138.1': 'Seeduwa',
     },
 
     'ad':
@@ -78,12 +79,8 @@ LocationDictionary = {
         '192.168.109.1': 'Rathnapura sr',
         '192.168.103.1': 'Nugegoda',
         '192.168.119.1': 'Kaduwela',
-        },
-
-    'fc':
-    {
-        '192.168.23.1':'Anuradhapura',
-    }
+        }
+  
  }
 
 

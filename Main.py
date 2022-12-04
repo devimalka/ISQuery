@@ -6,7 +6,6 @@ from mysql.connector.locales.eng import client_error
 from threading import Thread
 import os
 
-from Queries import *
 from MyLib import *
 from env import *
 from locations import LocationDictionary as LocationDict
