@@ -34,6 +34,7 @@ LocationDictionary = {
     '192.168.107.1': 'Katugasthota',
     '192.168.130.1':'Minuwangoda',
     '192.168.138.1': 'Seeduwa',
+    '192.168.137.1':'katukurunda',
     },
 
     'ad':
@@ -63,6 +64,7 @@ LocationDictionary = {
     '172.16.15.1': 'Anuradhapura',
     '172.16.28.1': 'Pelmadulla',
     '192.168.106.1': 'Wattala 02',
+    '172.16.12.1': 'Piliyandala Road Arpico Daily',
 
     },
 

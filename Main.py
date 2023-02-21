@@ -7,13 +7,12 @@ from threading import Thread
 import os
 
 from MyLib import *
-from env import *
 from locations import LocationDictionary as LocationDict
 from dataFramesLib import ExcelSaver, ListEmptyOrNot
 
 
 class MySQLImporter():
-    def __init__(self,Query,Filename,choices,FileExtension,IterativeOrNot):
+    def __init__(self,Query,Filename,choices,FileExtension,IterativeOrNot,username,password):
         self.DataFramesStack = []
         
         self.userdir = os.path.expanduser('~')
@@ -29,6 +28,9 @@ class MySQLImporter():
         self.FailedLocationList = []
         FolderCreate(self.Filename)
         
+
+        self.usr = username
+        self.passwd = password
         self.ADA_List = []
         self.SC_List  = []
         self.SR_List  = []
@@ -60,7 +62,7 @@ class MySQLImporter():
             Location_Name = CenterAndLocationName[1]
             CenterWiseFolderCreate(self.Filename,Center_Type)
             try:
-                cnx = mysql.connector.connect(user=usr,password=passwd,host=ip,database=db,port=3306)
+                cnx = mysql.connector.connect(user=self.usr,password=self.passwd,host=ip,database='marksys',port=3306)
 
 
                 if cnx.is_connected():
@@ -127,9 +129,9 @@ class MySQLImporter():
 
 
 
-def SaveToExcel(Query,Filename,choices,FileExtension,IterativeOrNot):
+def SaveToExcel(Query,Filename,choices,FileExtension,IterativeOrNot,username,password):
 
-    testobj = MySQLImporter(Query,Filename,choices,FileExtension,IterativeOrNot)
+    testobj = MySQLImporter(Query,Filename,choices,FileExtension,IterativeOrNot,username,password)
     queryDatas = testobj.IterativeOrNotRun()
     export = dfConcat(queryDatas[0])
     Daily_Df =dfConcat(queryDatas[1][0])

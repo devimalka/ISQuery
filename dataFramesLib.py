@@ -7,7 +7,7 @@ def ExcelSaver(df,filename,fileExtension):
     if fileExtension =='xls' or 'xlsx':
         xlswriter = pd.ExcelWriter(filename,engine='xlsxwriter')
         df.to_excel(xlswriter,index=False)
-        xlswriter.save()
+        xlswriter.close()
     elif fileExtension == 'csv':
         df.to_csv(filename,index=False,encoding='utf-8')
         

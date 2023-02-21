@@ -93,8 +93,20 @@ class AnotherWindow(QWidget):
             self.hboxlayoutchoices.addWidget(cbox)
         self.layout.addLayout(self.hboxlayoutchoices)
 
+        #username and password
+        self.user_name= QLineEdit()
+        self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.Password)
+
+        self.user_name.setPlaceholderText("user name")
+        self.password.setPlaceholderText("Password")
+
+        self.layout.addWidget(self.user_name)
+        self.layout.addWidget(self.password)
+
         # filename 
         self.filename = QLineEdit()
+        self.filename.setPlaceholderText("filename")
         self.layout.addWidget(self.filename)
             
         # Combo box to show the filetype which need to be saved
@@ -158,6 +170,9 @@ class AnotherWindow(QWidget):
         
         self.textinput.setReadOnly(True)
         self.filename.setReadOnly(True)
+
+
+
         
         self.setWidgetsDisableorEnable([self.exportBtn,self.extensions],False)
         self.setWidgetsDisableorEnable(self.findChildren(QCheckBox),False)
@@ -168,7 +183,9 @@ class AnotherWindow(QWidget):
         self.inputextension = self.extensions.currentText()
         self.getvalue = self.combodict.get(self.inputextension)
         self.truorfalse = self.RadioButtonCheck()
-        self.kwargs = {'Query':self.text,'Filename':self.saveFilename,'choices':self.cboxlist,'FileExtension':self.getvalue,'IterativeOrNot':self.truorfalse}
+
+        
+        self.kwargs = {'Query':self.text,'Filename':self.saveFilename,'choices':self.cboxlist,'FileExtension':self.getvalue,'IterativeOrNot':self.truorfalse,'username':self.user_name.text(),'password':self.password.text()}
         self.worker = Worker(SaveToExcel,**self.kwargs)
       
         self.worker.finished.connect(self.complete)
