@@ -11,15 +11,14 @@ import os
 from threading import *
 import sys
 basedir = os.path.dirname(__file__)
-from sqlalchemy import true
 
 
 from Main import *
 from MyLib import *
 from env import *
-import ctypes
-myappid = u'mycompany.myproduct.subproduct.version' # arbitrary string
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+#import ctypes
+#myappid = u'mycompany.myproduct.subproduct.version' # arbitrary string
+#ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     
 
